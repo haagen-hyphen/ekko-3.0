@@ -1233,10 +1233,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 991721292}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1227191fbb6087c4c9e5c6b9ac5a6db5, type: 3}
+  m_Script: {fileID: 11500000, guid: 7093f7f0ae67bdb4f9a3e22a03dd0c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 991721292}
+  moveCd: 0.5
+  moveMode: 4
+  gracePeriod: 0.2
 --- !u!1 &1027656559
 GameObject:
   m_ObjectHideFlags: 0
