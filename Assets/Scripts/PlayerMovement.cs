@@ -75,6 +75,7 @@ public class playerMovement : MonoBehaviour
 
             if (Time.time - _lastMoveTimeStamp > moveCd)
             {
+                Debug.Log(_moveBuffer);
                 transform.position += _moveBuffer;
                 _moveBuffer = Vector3.zero;
                 _lastMoveTimeStamp = Time.time;
@@ -109,6 +110,7 @@ public class playerMovement : MonoBehaviour
 
             if (Time.time - _lastMoveTimeStamp > moveCd)
             {
+                Debug.Log(_moveBuffer);
                 transform.position += _moveBuffer;
                 _moveBuffer = Vector3.zero;
                 _lastMoveTimeStamp += moveCd;
