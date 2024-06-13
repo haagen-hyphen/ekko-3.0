@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class playerMovement : MonoBehaviour
@@ -13,6 +15,9 @@ public class playerMovement : MonoBehaviour
 
     private Vector3 _moveBuffer;
     private float _lastMoveTimeStamp;
+    List<Vector3> _positionArray = new List<Vector3>();
+    public GameObject playerShadow;
+    public int numberOfTickPassed=0;
     void Start()
     {
         _lastMoveTimeStamp = 0;
@@ -170,9 +175,21 @@ public class playerMovement : MonoBehaviour
                 _moveBuffer = Vector3.zero;
                 _lastMoveTimeStamp += moveCd;
                 
+                _positionArray.Add(transform.position);
+                numberOfTickPassed += 1;
+                playerShadow.transform.position = _positionArray[numberOfTickPassed - 5];
+                
             }
             
         }
         
+
+        if(Input.GetKeyDown(KeyCode.F))
+            {
+                transform.position = _positionArray[numberOfTickPassed - 5];
+                playerShadow.transform.position = _positionArray[numberOfTickPassed - 2*5];
+                _positionArray.RemoveRange(_positionArray.Count-5,5);
+                numberOfTickPassed -= 5;
+            }
     }
 }
