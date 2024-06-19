@@ -1,191 +1,111 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-public class playerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
+    private float lastMoveTimeStamp;
+    public float gracePeriod;
+    public GameObject tickManagerGameObj;
+    private Vector3Int moveBuffer;
+    private float secondPerTick;
+    public GameObject gridManager;
+    public Dictionary<Vector3Int, GridClass> positionGridPairDictionary;
+    
     // Start is called before the first frame update
-    public float moveCd = 0.5f;
-    public int moveMode;
-    public float gracePeriod = 0.2f;
-
-
-    private Vector3 _moveBuffer;
-    private float _lastMoveTimeStamp;
-    List<Vector3> _positionArray = new List<Vector3>();
-    public GameObject playerShadow;
-    public int numberOfTickPassed=0;
     void Start()
     {
-        _lastMoveTimeStamp = 0;
-        _moveBuffer = Vector3.zero;
+        secondPerTick = tickManagerGameObj.GetComponent<TickManager>().secondPerTick;
+
+        positionGridPairDictionary = gridManager.GetComponent<GridDictionaryStorage>().positionGridPairDictionary;
     }
 
     // Update is called once per frame
-
-    private void Update()
+    void Update()
     {
-        if (moveMode == 1)
-        {
-            if (Time.time - _lastMoveTimeStamp > moveCd)
-            {
-                if (Input.GetKey(KeyCode.W))
-                {
-                    transform.position += new Vector3(0, 1, 0);
-                    _lastMoveTimeStamp = Time.time;
-                }
-                else if (Input.GetKey(KeyCode.S))
-                {
-                    transform.position += new Vector3(0, -1, 0);
-                    _lastMoveTimeStamp = Time.time;
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
-                    transform.position += new Vector3(-1, 0, 0);
-                    _lastMoveTimeStamp = Time.time;
-                }
-                else if (Input.GetKey(KeyCode.D))
-                {
-                    transform.position += new Vector3(1, 0, 0);
-                    _lastMoveTimeStamp = Time.time;
-                }
-                
+        StoreMoveBuffer();
+    }
 
-            }
-        }else if (moveMode == 2)
-        {
-            if (_moveBuffer == Vector3.zero)
+    public void AnythingToBeDoneWheneverTicks(int tickPassed){
+        lastMoveTimeStamp = Time.time;
+        MoveAndClearMoveBuffer();
+    }
+
+    void StoreMoveBuffer(){
+        if (Time.time - lastMoveTimeStamp > secondPerTick - gracePeriod)
             {
+
                 if (Input.GetKeyDown(KeyCode.W))
                 {
-                    _moveBuffer = new Vector3(0, 1, 0);
-                    
+                    moveBuffer = new Vector3Int(0, 1, 0);
                 }
                 else if (Input.GetKeyDown(KeyCode.S))
                 {
-                    _moveBuffer = new Vector3(0, -1, 0);
+                    moveBuffer = new Vector3Int(0, -1, 0);
                 }
                 else if (Input.GetKeyDown(KeyCode.A))
                 {
-                    _moveBuffer = new Vector3(-1, 0, 0);
+                    moveBuffer = new Vector3Int(-1, 0, 0);
                 }
                 else if (Input.GetKeyDown(KeyCode.D))
                 {
-                    _moveBuffer = new Vector3(1, 0, 0);
+                    moveBuffer = new Vector3Int(1, 0, 0);
                 }
             }
-
-            if (Time.time - _lastMoveTimeStamp > moveCd)
-            {
-                transform.position += _moveBuffer;
-                _moveBuffer = Vector3.zero;
-                _lastMoveTimeStamp = Time.time;
-                
-            }
-            
-        }else if (moveMode == 3)
-        {
-
+        else{
             if (Input.GetKey(KeyCode.W))
             {
-                _moveBuffer = new Vector3(0, 1, 0);
-                
+                moveBuffer = new Vector3Int(0, 1, 0);
+
             }
             else if (Input.GetKey(KeyCode.S))
             {
-                _moveBuffer = new Vector3(0, -1, 0);
+                moveBuffer = new Vector3Int(0, -1, 0);
             }
             else if (Input.GetKey(KeyCode.A))
             {
-                _moveBuffer = new Vector3(-1, 0, 0);
+                moveBuffer = new Vector3Int(-1, 0, 0);
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                _moveBuffer = new Vector3(1, 0, 0);
+                moveBuffer = new Vector3Int(1, 0, 0);
             }
             else
             {
-                _moveBuffer = Vector3.zero;
+                moveBuffer = Vector3Int.zero;
             }
-
-
-            if (Time.time - _lastMoveTimeStamp > moveCd)
-            {
-                transform.position += _moveBuffer;
-                _moveBuffer = Vector3.zero;
-                _lastMoveTimeStamp += moveCd;
-                
             }
-            
-        }else if (moveMode == 4)
-        {
-            if (Time.time - _lastMoveTimeStamp > moveCd - gracePeriod)
-            {
-
-                if (Input.GetKeyDown(KeyCode.W))
-                {
-                    _moveBuffer = new Vector3(0, 1, 0);
-                
-                }
-                else if (Input.GetKeyDown(KeyCode.S))
-                {
-                    _moveBuffer = new Vector3(0, -1, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.A))
-                {
-                    _moveBuffer = new Vector3(-1, 0, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.D))
-                {
-                    _moveBuffer = new Vector3(1, 0, 0);
-                }
-            }else
-            {
-                if (Input.GetKey(KeyCode.W))
-                {
-                    _moveBuffer = new Vector3(0, 1, 0);
-
-                }
-                else if (Input.GetKey(KeyCode.S))
-                {
-                    _moveBuffer = new Vector3(0, -1, 0);
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
-                    _moveBuffer = new Vector3(-1, 0, 0);
-                }
-                else if (Input.GetKey(KeyCode.D))
-                {
-                    _moveBuffer = new Vector3(1, 0, 0);
-                }
-                else
-                {
-                    _moveBuffer = Vector3.zero;
-                }
-            }
-
-            if (Time.time - _lastMoveTimeStamp > moveCd)
-            {
-                transform.position += _moveBuffer;
-                _moveBuffer = Vector3.zero;
-                _lastMoveTimeStamp += moveCd;
-                
-                _positionArray.Add(transform.position);
-                numberOfTickPassed += 1;
-                playerShadow.transform.position = _positionArray[numberOfTickPassed - 5];
-                
-            }
-            
-        }
-        if(Input.GetKeyDown(KeyCode.F))
-        {
-            transform.position = _positionArray[numberOfTickPassed - 5];
-            playerShadow.transform.position = _positionArray[numberOfTickPassed - 2*5 ];
-            _positionArray.RemoveRange(_positionArray.Count-5,5);
-            numberOfTickPassed -= 5;
-        }
+    
     }
+    void MoveAndClearMoveBuffer(){
+        Vector3Int currentPositionInt = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+        Vector3Int aimedDestination = currentPositionInt + moveBuffer;
+        try {
+            if(positionGridPairDictionary[aimedDestination].CheckIfWalkable() == true){
+            transform.position += moveBuffer;
+        }
+        }
+        catch{
+        
+        }
+        moveBuffer = Vector3Int.zero;
+    }
+
+    // if (Time.time - _lastMoveTimeStamp > moveCd)
+    //         {   _positionArray.Add(transform.position);
+    //             numberOfTickPassed += 1;
+    //             playerShadow.transform.position = _positionArray[numberOfTickPassed - 5];
+
+    // if(Input.GetKeyDown(KeyCode.F))
+    //     {
+    //         transform.position = _positionArray[numberOfTickPassed - 5];
+    //         playerShadow.transform.position = _positionArray[numberOfTickPassed - 2*5 ];
+    //         _positionArray.RemoveRange(_positionArray.Count-5,5);
+    //         numberOfTickPassed -= 5;
+    //     }
+
 }
