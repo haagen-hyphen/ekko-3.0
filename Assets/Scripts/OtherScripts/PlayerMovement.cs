@@ -14,14 +14,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector3Int moveBuffer;
     private float secondPerTick;
     public GameObject gridManager;
-    public Dictionary<Vector3Int, GridClass> positionGridPairDictionary;
     
     // Start is called before the first frame update
     void Start()
     {
         secondPerTick = tickManagerGameObj.GetComponent<TickManager>().secondPerTick;
-
-        positionGridPairDictionary = gridManager.GetComponent<GridDictionaryStorage>().positionGridPairDictionary;
     }
 
     // Update is called once per frame
@@ -85,16 +82,20 @@ public class PlayerMovement : MonoBehaviour
         Vector3Int currentPositionInt = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
         try {
-            if(positionGridPairDictionary[aimedDestination].CheckIfWalkable() == true){
+            if(gridManager.GetComponent<GridManagerScript>().CheckIfWalkable(aimedDestination) == true){
             transform.position += moveBuffer;
-        }
+            }
+            else{
+                Debug.Log("can't walk to " + aimedDestination.ToString() + "bcoz not walkable");
+            }
         }
         catch{
-        
+            Debug.Log("can't walk to " + aimedDestination.ToString() + "bcoz not even registered");
         }
         moveBuffer = Vector3Int.zero;
     }
 
+    // BELOW ARE THINGS RELATED TO EKKO
     // if (Time.time - _lastMoveTimeStamp > moveCd)
     //         {   _positionArray.Add(transform.position);
     //             numberOfTickPassed += 1;
