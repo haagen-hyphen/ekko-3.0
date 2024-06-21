@@ -14,11 +14,13 @@ public class PlayerMovement : MonoBehaviour
     private Vector3Int moveBuffer;
     private float secondPerTick;
     public GameObject gridManager;
+    private GridManagerScript gridManagerScript;
     
     // Start is called before the first frame update
     void Start()
     {
         secondPerTick = tickManagerGameObj.GetComponent<TickManager>().secondPerTick;
+        gridManagerScript = gridManager.GetComponent<GridManagerScript>();
     }
 
     // Update is called once per frame
@@ -82,16 +84,22 @@ public class PlayerMovement : MonoBehaviour
         Vector3Int currentPositionInt = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
         try {
-            if(gridManager.GetComponent<GridManagerScript>().CheckIfWalkable(aimedDestination) == true){
-            transform.position += moveBuffer;
-            }
-            else{
-                Debug.Log("can't walk to " + aimedDestination.ToString() + "bcoz not walkable");
+            if(gridManagerScript.CheckIfWalkable(aimedDestination) == true){                    //if it's not a wall
+                if(gridManagerScript.CheckIfInteractable(aimedDestination) == true){
+                    if(gridManagerScript.CheckIfPushable(aimedDestination) == true){            //and it's a box, but here will jump to catch
+                        Vector3Int positionToBePushedTo = currentPositionInt += 2*moveBuffer;
+                        if(gridManagerScript.CheckIfWalkable(positionToBePushedTo) == true){    //and behind got space
+                            gridManagerScript.MoveTile(aimedDestination, positionToBePushedTo);     //push it
+                            transform.position += moveBuffer;
+                        }
+                    }
+                }
+                else{                                                                           //else it is not a box, just walk
+                    transform.position += moveBuffer;
+                }
             }
         }
-        catch{
-            Debug.Log("can't walk to " + aimedDestination.ToString() + "bcoz not even registered");
-        }
+        catch{}
         moveBuffer = Vector3Int.zero;
     }
 
