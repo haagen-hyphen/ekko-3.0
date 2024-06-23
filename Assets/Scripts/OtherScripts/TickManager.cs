@@ -7,7 +7,7 @@ public class TickManager : MonoBehaviour
     [HideInInspector]public int tickPassed = 0;
     public float secondPerTick;
 
-    public GameObject Player;
+    public PlayerMovement playerMovement;
 
     // Start is called before the first frame update
     void Start()
@@ -22,10 +22,8 @@ public class TickManager : MonoBehaviour
             tickPassed += 1;
             CallEveryOtherAction();
         }
-
     }
-
     void CallEveryOtherAction(){
-        Player.GetComponent<PlayerMovement>().AnythingToBeDoneWheneverTicks(tickPassed);
+        playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
     }
 }

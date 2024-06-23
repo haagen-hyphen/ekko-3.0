@@ -11,6 +11,7 @@ public class GridTypeClass: ScriptableObject
     public TileBase[] tile;
     public bool walkable;
     public bool pushable;
+    public bool timeImmune;
 
     // Basically, this is for 
     // 1. defining some characteristic of a grid, for example walkability, or

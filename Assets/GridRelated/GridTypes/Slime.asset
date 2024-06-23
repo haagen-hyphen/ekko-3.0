@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84b73fc53928cf14cb9b19e51fa349b3, type: 3}
-  m_Name: Box
+  m_Name: Slime
   m_EditorClassIdentifier: 
   tile:
-  - {fileID: 11400000, guid: 40cbfdfdc01ad8846aef5dc4d99b3379, type: 2}
+  - {fileID: 11400000, guid: 035baa0aead6d184ab5df9302d305447, type: 2}
   walkable: 0
-  pushable: 1
+  pushable: 0
+  timeImmune: 0
