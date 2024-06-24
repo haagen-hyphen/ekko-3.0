@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84b73fc53928cf14cb9b19e51fa349b3, type: 3}
-  m_Name: Wall
+  m_Name: Button
   m_EditorClassIdentifier: 
-  tile:
-  - {fileID: 11400000, guid: 44a6602c75a5ba64f9bdfc74730ddbab, type: 2}
+  tile: []
   walkable: 0
   pushable: 0
   timeImmune: 0

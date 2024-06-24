@@ -83,21 +83,26 @@ public class PlayerMovement : MonoBehaviour
     void MoveAndClearMoveBuffer(){
         Vector3Int currentPositionInt = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
-        Vector3Int positionToBePushedTo = currentPositionInt + 2*moveBuffer;
-        if(gridManagerScript.CheckIfWalkable(aimedDestination)){                    //if it's not a wall
+        Vector3Int positionToBePushedTo = currentPositionInt + 2*moveBuffer;        //for button
+        if(!gridManagerScript.CheckIfWalkable(aimedDestination)){
+            moveBuffer = Vector3Int.zero;
+            return;
+        }
+        if(gridManagerScript.CheckIfWalkable(aimedDestination)){
             if(gridManagerScript.CheckIfLayer3HasObject(aimedDestination)){
-                if(gridManagerScript.CheckIfPushable(aimedDestination)){            //and it's a box, but here will jump to catch
-                    if(gridManagerScript.CheckIfWalkable(positionToBePushedTo)){    //and behind got space
-                        gridManagerScript.MoveTile(3, aimedDestination, positionToBePushedTo);     //push it
+                if(gridManagerScript.CheckIfPushable(aimedDestination)){
+                    if(gridManagerScript.CheckIfWalkable(positionToBePushedTo)){
+                        gridManagerScript.MoveTile(3, aimedDestination, positionToBePushedTo);
                         transform.position += moveBuffer;
                     }
                 }
             }
-            else{                                                                           //else it is not a box, just walk
+            else{
                 transform.position += moveBuffer;
             }
         }
         moveBuffer = Vector3Int.zero;
+        gridManagerScript.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
 
     // BELOW ARE THINGS RELATED TO EKKO

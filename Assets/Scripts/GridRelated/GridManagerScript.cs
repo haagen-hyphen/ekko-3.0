@@ -6,16 +6,31 @@ using UnityEngine.Tilemaps;
 
 public class GridManagerScript : MonoBehaviour
 {
+    [SerializeField]private TileBase[] tileBaseArray;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
     [SerializeField]private List<GridTypeClass> gridTypeClassList;
-    [HideInInspector]public Vector2Int playerPosition;
+    [HideInInspector]public Vector3Int playerPosition;
     public Dictionary<TileBase,GridTypeClass> tileBaseToGridClassData = new Dictionary<TileBase,GridTypeClass>();
     
+    public List<Vector3Int> buttons;
+    [System.Serializable]
+    public class serializableClass{
+        public List<Vector3Int> DoorsControlledByTheSameButton;
+    }
+    public List<serializableClass> listToBePairedWithButton = new List<serializableClass>();
+    public Dictionary<Vector3Int, serializableClass> buttonDoorPairs = new Dictionary<Vector3Int,serializableClass>();
+
+
 
     void Awake(){
         PairUpTileBaseAndGridTypeClass();
+        PairUpButtonAndDoors();
+    }
+
+    public void AnythingToBeDoneWheneverTicks(int tickPassed){
+        CheckAndTriggerButtons();
     }
 
     public void PairUpTileBaseAndGridTypeClass(){
@@ -25,7 +40,11 @@ public class GridManagerScript : MonoBehaviour
             }
         }
     }
-
+    public void PairUpButtonAndDoors(){
+        for(int i = 0; i < buttons.Count; i++){
+            buttonDoorPairs[buttons[i]] = listToBePairedWithButton[i];
+        }
+    }
     public TileBase GetTile(int layer, Vector3Int v){
         switch(layer){
             case 1:
@@ -37,7 +56,6 @@ public class GridManagerScript : MonoBehaviour
         }
         return null;
     }
-
     public void SetTile(int layer, Vector3Int v, TileBase t){
         switch(layer){
             case 1:
@@ -48,13 +66,6 @@ public class GridManagerScript : MonoBehaviour
                 layer3.SetTile(v,t);break;
         }
     }
-    // public bool CheckIfWalkable(Vector3 v){
-    //     Vector3Int gridPosition = layer1.WorldToCell(v);
-    //     TileBase tileToCheck = layer1.GetTile(gridPosition);
-    //     GridTypeClass gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
-    //     bool itsWalkability = gridClassItBelongsTo.walkable;
-    //     return itsWalkability;
-    // }
     public bool CheckIfLayer2HasObject(Vector3Int v){
         TileBase tileToCheck = GetTile(2,v);
         if (tileToCheck){
@@ -86,5 +97,34 @@ public class GridManagerScript : MonoBehaviour
         SetTile(layer, from, null);
         SetTile(layer, to, tileToMove);
     }
-
+    
+    private bool wasTriggeredLastTick = false;
+    public void CheckAndTriggerButtons(){
+        foreach(var buttonPosition in buttons){
+            if(CheckIfLayer3HasObject(buttonPosition) || playerPosition == buttonPosition){
+                if(!wasTriggeredLastTick){
+                    foreach(var door in buttonDoorPairs[buttonPosition].DoorsControlledByTheSameButton){
+                        AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
+                    }
+                }
+                wasTriggeredLastTick = true;
+            }
+            else{
+                if(wasTriggeredLastTick){
+                    foreach(var door in buttonDoorPairs[buttonPosition].DoorsControlledByTheSameButton){
+                        AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
+                    }
+                }
+                wasTriggeredLastTick = false;
+            }
+        }
+    }
+    public void AlterTileBase(Vector3Int v, TileBase a, TileBase b){
+        if(GetTile(1,v) == a){
+            SetTile(1,v,b);
+        }
+        else if(GetTile(1,v) == b){
+            SetTile(1,v,a);
+        }
+    }
 }

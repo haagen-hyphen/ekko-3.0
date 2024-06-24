@@ -8,6 +8,7 @@ public class TickManager : MonoBehaviour
     public float secondPerTick;
 
     public PlayerMovement playerMovement;
+    public GridManagerScript gridManagerScript;
 
     // Start is called before the first frame update
     void Start()
@@ -25,5 +26,6 @@ public class TickManager : MonoBehaviour
     }
     void CallEveryOtherAction(){
         playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
+        gridManagerScript.AnythingToBeDoneWheneverTicks(tickPassed);
     }
 }
