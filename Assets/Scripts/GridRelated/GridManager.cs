@@ -71,6 +71,8 @@ public class GridManager : MonoBehaviour
         }
         return false;
     }
+    
+    
     public bool CheckIfLayer3HasObject(Vector3Int v){
         TileBase tileToCheck = GetTile(3,v);
         if (tileToCheck){
@@ -116,12 +118,14 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-    public void AlterTileBase(Vector3Int v, TileBase a, TileBase b){
-        if(GetTile(1,v) == a){
-            SetTile(1,v,b);
+    public void AlterTileBase(Vector3Int tilePosition, TileBase a, TileBase b){
+        if(GetTile(1,tilePosition) == a){
+            SetTile(1,tilePosition,b);
         }
-        else if(GetTile(1,v) == b){
-            SetTile(1,v,a);
+        else if(GetTile(1,tilePosition) == b){
+            SetTile(1,tilePosition,a);
         }
+        
     }
+    
 }

@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public TickManager tickManager;
     private Vector3Int moveBuffer;
     private float secondPerTick;
-    public GridManager gridManagerScript;
+    public GridManager gridManager;
     
     // Start is called before the first frame update
     void Start()
@@ -81,15 +82,15 @@ public class PlayerMovement : MonoBehaviour
         Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
         Vector3Int positionToBePushedTo = currentPositionInt + 2*moveBuffer;        //for button
-        if(!gridManagerScript.CheckIfWalkable(aimedDestination)){
+        if(!gridManager.CheckIfWalkable(aimedDestination)){
             moveBuffer = Vector3Int.zero;
             return;
         }
-        if(gridManagerScript.CheckIfWalkable(aimedDestination)){
-            if(gridManagerScript.CheckIfLayer3HasObject(aimedDestination)){
-                if(gridManagerScript.CheckIfPushable(aimedDestination)){
-                    if(gridManagerScript.CheckIfWalkable(positionToBePushedTo)){
-                        gridManagerScript.MoveTile(3, aimedDestination, positionToBePushedTo);
+        if(gridManager.CheckIfWalkable(aimedDestination)){
+            if(gridManager.CheckIfLayer3HasObject(aimedDestination)){
+                if(gridManager.CheckIfPushable(aimedDestination)){
+                    if(gridManager.CheckIfWalkable(positionToBePushedTo)){
+                        gridManager.MoveTile(3, aimedDestination, positionToBePushedTo);
                         transform.position += moveBuffer;
                     }
                 }
@@ -99,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         moveBuffer = Vector3Int.zero;
-        gridManagerScript.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+        gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
 
     // BELOW ARE THINGS RELATED TO EKKO
