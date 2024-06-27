@@ -124,4 +124,9 @@ public class GridManager : MonoBehaviour
             SetTile(1,v,a);
         }
     }
+
+    public GameState GetGameState()
+    {
+        return new GameState(playerPosition, layer1, layer2, layer3, buttons);
+    }
 }
