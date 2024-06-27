@@ -424,8 +424,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gracePeriod: 0.2
-  tickManager: {fileID: 1694354264}
-  gridManagerScript: {fileID: 1336488984}
+  tickManager: {fileID: 1336488986}
+  gridManager: {fileID: 1336488984}
 --- !u!1 &410603804
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,7 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4310906b39cf6f47b80482225dbc70b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickManager: {fileID: 1694354264}
+  tickManager: {fileID: 0}
   axisTransform: {fileID: 1498422557}
   abilitySlot: {fileID: 1230090665}
   abilityImages:
@@ -2602,8 +2602,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1336488983}
   - component: {fileID: 1336488984}
+  - component: {fileID: 1336488985}
+  - component: {fileID: 1336488986}
   m_Layer: 0
-  m_Name: GridManager
+  m_Name: Managers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2657,10 +2659,46 @@ MonoBehaviour:
     doors:
     - {x: 3, y: -2, z: 0}
     - {x: 3, y: 0, z: 0}
+    triggeredLastTick: 0
   - position: {x: 0, y: -3, z: 0}
     doors:
     - {x: 3, y: -1, z: 0}
     - {x: 3, y: 1, z: 0}
+    triggeredLastTick: 0
+--- !u!114 &1336488985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336488981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26db920ee1b8389419359811c833bbef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridManager: {fileID: 1336488984}
+  slimes:
+  - position: {x: 5, y: 2, z: 0}
+    tickSinceLastMove: 0
+    tickPerMove: 6
+--- !u!114 &1336488986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336488981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5707130bf267c043b65ca8c981a1afe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tickPassed: 0
+  secondPerTick: 0.5
+  playerMovement: {fileID: 378199612}
+  gridManagerScript: {fileID: 1336488984}
+  enemyManager: {fileID: 1336488985}
 --- !u!1 &1498422556
 GameObject:
   m_ObjectHideFlags: 0
@@ -3120,54 +3158,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2117961023}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1694354263
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1694354265}
-  - component: {fileID: 1694354264}
-  m_Layer: 0
-  m_Name: TickManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1694354264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694354263}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5707130bf267c043b65ca8c981a1afe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tickPassed: 0
-  secondPerTick: 0.5
-  playerMovement: {fileID: 378199612}
-  gridManagerScript: {fileID: 1336488984}
---- !u!4 &1694354265
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694354263}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.38600707, y: -1.3167464, z: 0.046361092}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1696058241
 GameObject:
   m_ObjectHideFlags: 0
@@ -3424,7 +3414,6 @@ SceneRoots:
   - {fileID: 294775101}
   - {fileID: 519420032}
   - {fileID: 1336488983}
-  - {fileID: 1694354265}
   - {fileID: 2117961023}
   - {fileID: 1696058244}
   - {fileID: 627457797}
