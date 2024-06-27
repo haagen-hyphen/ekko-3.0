@@ -10,17 +10,15 @@ public class PlayerMovement : MonoBehaviour
 {
     private float lastMoveTimeStamp;
     public float gracePeriod;
-    public GameObject tickManagerGameObj;
+    public TickManager tickManager;
     private Vector3Int moveBuffer;
     private float secondPerTick;
-    public GameObject gridManager;
-    private GridManagerScript gridManagerScript;
+    public GridManagerScript gridManagerScript;
     
     // Start is called before the first frame update
     void Start()
     {
-        secondPerTick = tickManagerGameObj.GetComponent<TickManager>().secondPerTick;
-        gridManagerScript = gridManager.GetComponent<GridManagerScript>();
+        secondPerTick = tickManager.secondPerTick;
     }
 
     // Update is called once per frame
@@ -59,7 +57,6 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetKey(KeyCode.W))
             {
                 moveBuffer = new Vector3Int(0, 1, 0);
-
             }
             else if (Input.GetKey(KeyCode.S))
             {
@@ -77,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 moveBuffer = Vector3Int.zero;
             }
-            }
+        }
     
     }
     void MoveAndClearMoveBuffer(){
