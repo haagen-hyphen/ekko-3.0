@@ -8,7 +8,7 @@ public class TickManager : MonoBehaviour
     public float secondPerTick;
 
     public PlayerMovement playerMovement;
-    public GridManagerScript gridManagerScript;
+    public GridManager gridManagerScript;
 
     // Start is called before the first frame update
     void Start()

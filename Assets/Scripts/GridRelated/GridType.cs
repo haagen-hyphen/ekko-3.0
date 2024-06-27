@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 [CreateAssetMenu]
-public class GridTypeClass: ScriptableObject
+public class GridType: ScriptableObject
 {
     public TileBase[] tile;
     public bool walkable;

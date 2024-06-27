@@ -425,7 +425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gracePeriod: 0.2
   tickManager: {fileID: 1694354264}
-  gridManagerScript: {fileID: 1336488982}
+  gridManagerScript: {fileID: 1336488984}
 --- !u!1 &410603804
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,7 +1253,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 455007ecae5d9944c96d463fcc268991, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2601,7 +2601,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1336488983}
-  - component: {fileID: 1336488982}
+  - component: {fileID: 1336488984}
   m_Layer: 0
   m_Name: GridManager
   m_TagString: Untagged
@@ -2609,37 +2609,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1336488982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1336488981}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11612105bbd205e49aa7039c93fe5939, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileBaseArray:
-  - {fileID: 11400000, guid: 7232ed3ded07c074eb491a0d0e9e77af, type: 2}
-  - {fileID: 11400000, guid: 44a6602c75a5ba64f9bdfc74730ddbab, type: 2}
-  layer1: {fileID: 1244492304}
-  layer2: {fileID: 1653850240}
-  layer3: {fileID: 965337024}
-  gridTypeClassList:
-  - {fileID: 11400000, guid: cab3eb001cf842c4ba63a3531617e8df, type: 2}
-  - {fileID: 11400000, guid: ca1e9ce93122852498d6438cd07cd1e8, type: 2}
-  - {fileID: 11400000, guid: ff6c2ff64e3370d439e21b54334dec2b, type: 2}
-  - {fileID: 11400000, guid: c9e5eb97dd636484dba45442392eb014, type: 2}
-  - {fileID: 11400000, guid: d79ceb3cf8500354a8c602458e770513, type: 2}
-  playerPosition: {x: 0, y: 0, z: 0}
-  buttons:
-  - {x: 0, y: -2, z: 0}
-  listToBePairedWithButton:
-  - DoorsControlledByTheSameButton:
-    - {x: 3, y: 0, z: 0}
-    - {x: 3, y: -2, z: 0}
 --- !u!4 &1336488983
 Transform:
   m_ObjectHideFlags: 0
@@ -2655,6 +2624,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1336488984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336488981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7ed079810e7ed449be09625bc68372, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileBaseArray:
+  - {fileID: 11400000, guid: 7232ed3ded07c074eb491a0d0e9e77af, type: 2}
+  - {fileID: 11400000, guid: 44a6602c75a5ba64f9bdfc74730ddbab, type: 2}
+  - {fileID: 11400000, guid: 40cbfdfdc01ad8846aef5dc4d99b3379, type: 2}
+  - {fileID: 11400000, guid: 2a75fbadba5c58a4ca9e895308b3ce8a, type: 2}
+  layer1: {fileID: 1244492304}
+  layer2: {fileID: 1653850240}
+  layer3: {fileID: 965337024}
+  gridTypeClassList:
+  - {fileID: 11400000, guid: ca1e9ce93122852498d6438cd07cd1e8, type: 2}
+  - {fileID: 11400000, guid: 1dee181f3a236404a85c6dbafdfac1d3, type: 2}
+  - {fileID: 11400000, guid: cab3eb001cf842c4ba63a3531617e8df, type: 2}
+  - {fileID: 11400000, guid: c9e5eb97dd636484dba45442392eb014, type: 2}
+  - {fileID: 11400000, guid: d79ceb3cf8500354a8c602458e770513, type: 2}
+  - {fileID: 11400000, guid: ff6c2ff64e3370d439e21b54334dec2b, type: 2}
+  playerPosition: {x: 0, y: 0, z: 0}
+  buttons:
+  - position: {x: 0, y: -2, z: 0}
+    doors:
+    - {x: 3, y: -2, z: 0}
+    - {x: 3, y: 0, z: 0}
+  - position: {x: 0, y: -3, z: 0}
+    doors:
+    - {x: 3, y: -1, z: 0}
+    - {x: 3, y: 1, z: 0}
 --- !u!1 &1498422556
 GameObject:
   m_ObjectHideFlags: 0
@@ -2951,6 +2957,16 @@ Tilemap:
   m_GameObject: {fileID: 1653850239}
   m_Enabled: 1
   m_Tiles:
+  - first: {x: 0, y: -3, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 3
+      m_TileSpriteIndex: 3
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 2
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: 0, y: -2, z: 0}
     second:
       serializedVersion: 2
@@ -2979,7 +2995,7 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: cf84b3fd2d4e2fd4da7457735448b115, type: 2}
-  - m_RefCount: 1
+  - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: 2a75fbadba5c58a4ca9e895308b3ce8a, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 0
@@ -2988,10 +3004,10 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 027e4a250bbbc0e41aa683e6a2398eeb, type: 3}
-  - m_RefCount: 1
+  - m_RefCount: 2
     m_Data: {fileID: 21300000, guid: 6c8cd6a4240b7304282ae767638dce62, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 2
+  - m_RefCount: 3
     m_Data:
       e00: 1
       e01: 0
@@ -3014,13 +3030,13 @@ Tilemap:
     m_Data: {r: 3.64e-41, g: 3.64e-41, b: 3.64e-41, a: 3.64e-41}
   - m_RefCount: 0
     m_Data: {r: 3.64e-41, g: 3.64e-41, b: 3.64e-41, a: 3.64e-41}
-  - m_RefCount: 2
+  - m_RefCount: 3
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: -2, y: -2, z: 0}
-  m_Size: {x: 10, y: 4, z: 1}
+  m_Origin: {x: -2, y: -3, z: 0}
+  m_Size: {x: 10, y: 5, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -3136,7 +3152,7 @@ MonoBehaviour:
   tickPassed: 0
   secondPerTick: 0.5
   playerMovement: {fileID: 378199612}
-  gridManagerScript: {fileID: 1336488982}
+  gridManagerScript: {fileID: 1336488984}
 --- !u!4 &1694354265
 Transform:
   m_ObjectHideFlags: 0

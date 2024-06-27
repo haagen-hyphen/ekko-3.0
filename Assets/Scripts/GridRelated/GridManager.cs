@@ -4,29 +4,31 @@ using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class GridManagerScript : MonoBehaviour
+[System.Serializable]
+public class Button{
+    public Vector3Int position;
+    public List<Vector3Int> doors;
+
+    [HideInInspector]
+    public bool triggeredLastTick = false;
+}
+
+public class GridManager : MonoBehaviour
 {
     [SerializeField]private TileBase[] tileBaseArray;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
-    [SerializeField]private List<GridTypeClass> gridTypeClassList;
+    [SerializeField]private List<GridType> gridTypeClassList;
     [HideInInspector]public Vector3Int playerPosition;
-    public Dictionary<TileBase,GridTypeClass> tileBaseToGridClassData = new Dictionary<TileBase,GridTypeClass>();
+    public Dictionary<TileBase,GridType> tileBaseToGridClassData = new Dictionary<TileBase,GridType>();
     
-    public List<Vector3Int> buttons;
-    [System.Serializable]
-    public class serializableClass{
-        public List<Vector3Int> DoorsControlledByTheSameButton;
-    }
-    public List<serializableClass> listToBePairedWithButton = new List<serializableClass>();
-    public Dictionary<Vector3Int, serializableClass> buttonDoorPairs = new Dictionary<Vector3Int,serializableClass>();
+    public List<Button> buttons;
 
 
 
     void Awake(){
         PairUpTileBaseAndGridTypeClass();
-        PairUpButtonAndDoors();
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
@@ -40,11 +42,7 @@ public class GridManagerScript : MonoBehaviour
             }
         }
     }
-    public void PairUpButtonAndDoors(){
-        for(int i = 0; i < buttons.Count; i++){
-            buttonDoorPairs[buttons[i]] = listToBePairedWithButton[i];
-        }
-    }
+    
     public TileBase GetTile(int layer, Vector3Int v){
         switch(layer){
             case 1:
@@ -82,13 +80,13 @@ public class GridManagerScript : MonoBehaviour
     }
     public bool CheckIfWalkable(Vector3Int v){
         TileBase tileToCheck = GetTile(1,v);
-        GridTypeClass gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
+        GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
         bool itsWalkability = gridClassItBelongsTo.walkable;
         return itsWalkability;
     }
     public bool CheckIfPushable(Vector3Int v){
         TileBase tileToCheck = GetTile(3,v);
-        GridTypeClass gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
+        GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
         bool itsPushability = gridClassItBelongsTo.pushable;
         return itsPushability;
     }
@@ -97,25 +95,24 @@ public class GridManagerScript : MonoBehaviour
         SetTile(layer, from, null);
         SetTile(layer, to, tileToMove);
     }
-    
-    private bool wasTriggeredLastTick = false;
+
     public void CheckAndTriggerButtons(){
-        foreach(var buttonPosition in buttons){
-            if(CheckIfLayer3HasObject(buttonPosition) || playerPosition == buttonPosition){
-                if(!wasTriggeredLastTick){
-                    foreach(var door in buttonDoorPairs[buttonPosition].DoorsControlledByTheSameButton){
+        foreach(var button in buttons){
+            if(CheckIfLayer3HasObject(button.position) || playerPosition == button.position){
+                if(!button.triggeredLastTick){
+                    foreach(var door in button.doors){
                         AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
                     }
                 }
-                wasTriggeredLastTick = true;
+                button.triggeredLastTick = true;
             }
             else{
-                if(wasTriggeredLastTick){
-                    foreach(var door in buttonDoorPairs[buttonPosition].DoorsControlledByTheSameButton){
+                if(button.triggeredLastTick){
+                    foreach(var door in button.doors){
                         AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
                     }
                 }
-                wasTriggeredLastTick = false;
+                button.triggeredLastTick = false;
             }
         }
     }

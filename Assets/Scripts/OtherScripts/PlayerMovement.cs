@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public TickManager tickManager;
     private Vector3Int moveBuffer;
     private float secondPerTick;
-    public GridManagerScript gridManagerScript;
+    public GridManager gridManagerScript;
     
     // Start is called before the first frame update
     void Start()
@@ -78,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
     
     }
     void MoveAndClearMoveBuffer(){
-        Vector3Int currentPositionInt = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+        Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
         Vector3Int positionToBePushedTo = currentPositionInt + 2*moveBuffer;        //for button
         if(!gridManagerScript.CheckIfWalkable(aimedDestination)){
