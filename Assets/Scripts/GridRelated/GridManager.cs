@@ -66,29 +66,86 @@ public class GridManager : MonoBehaviour
         };
     }
 
-    public void SetLayer(int layer, Tilemap tilemap)
-    {
-        switch (layer)
-        {
-            case 1:
-                layer1 = tilemap; break;
-            case 2:
-                layer2 = tilemap; break;
-            case 3:
-                layer3 = tilemap; break;
-        }
-    }
-
     public GameState GetGameState()
     {
-        return new GameState(playerPosition, layer1, layer2, layer3, buttons);
+        return new GameState(playerPosition, TilemapToDict(1), TilemapToDict(2), TilemapToDict(3), buttons);
     }
 
     public void SetButtons(List<Button> newButtons){
-        buttons = newButtons;
+        buttons = new List<Button>(newButtons);
     }
 
     #endregion
+
+    public Dictionary<Vector3Int, Cell> TilemapToDict(int layer)
+    {
+        Dictionary<Vector3Int, Cell> dict = new();
+        if (layer == 1)
+        {
+            for (int i = layer1.cellBounds.min.x; i < layer1.cellBounds.max.x; i++)
+            {
+                for (int j = layer1.cellBounds.min.y; j < layer1.cellBounds.max.y; j++)
+                {
+                    Vector3Int pos = new(i,j,0);
+                    Cell cell = GetCell(1, pos);
+                    dict[pos] = cell; 
+                }
+            }
+        }
+        if (layer == 2)
+        {
+            for (int i = layer2.cellBounds.min.x; i < layer2.cellBounds.max.x; i++)
+            {
+                for (int j = layer2.cellBounds.min.y; j < layer2.cellBounds.max.y; j++)
+                {
+                    Vector3Int pos = new(i,j,0);
+                    Cell cell = GetCell(2, pos);
+                    dict[pos] = cell; 
+                }
+            }
+        }
+        if (layer == 3)
+        {
+            for (int i = layer3.cellBounds.min.x; i < layer3.cellBounds.max.x; i++)
+            {
+                for (int j = layer3.cellBounds.min.y; j < layer3.cellBounds.max.y; j++)
+                {
+                    Vector3Int pos = new(i,j,0);
+                    Cell cell = GetCell(3, pos);
+                    dict[pos] = cell; 
+                }
+            }
+        }
+        return dict;
+    }
+
+    public void DictToTilemap(int layer, Dictionary<Vector3Int, Cell> dict)
+    {
+        if (layer == 1)
+        {
+            layer1.ClearAllTiles();
+            foreach(var item in dict)
+            {
+                SetCell(1, item.Key, item.Value);
+            }
+        }
+        if (layer == 2)
+        {
+            layer2.ClearAllTiles();
+            foreach(var item in dict)
+            {
+                SetCell(2, item.Key, item.Value);
+            }
+        }
+        if (layer == 3)
+        {
+            layer3.ClearAllTiles();
+            foreach(var item in dict)
+            {
+                SetCell(3, item.Key, item.Value);
+            }
+        }
+    }
 
     public bool CheckIfLayer1HasObject(Vector3Int position){
         Cell cell = GetCell(1,position);
@@ -157,8 +214,8 @@ public class GridManager : MonoBehaviour
         if(GetCell(1,position) == cell1){
             SetCell(1, position, cell2);
         }
-        else if(GetCell(1,v) == b){
-            SetCell(1,v,a);
+        else if(GetCell(1,position) == cell2){
+            SetCell(1,position, cell1);
         }
         
     }

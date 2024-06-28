@@ -7,18 +7,23 @@ using UnityEngine.Tilemaps;
 public class GameState
 {
     public Vector3Int playerPosition;
-    public Tilemap layer1;
-    public Tilemap layer2;
-    public Tilemap layer3;
+    public Dictionary<Vector3Int, Cell> layer1;
+    public Dictionary<Vector3Int, Cell> layer2;
+    public Dictionary<Vector3Int, Cell> layer3;
     public List<Button> buttons;
+    public List<Slime> slimes;
 
-    public GameState(Vector3Int playerCurrPos, Tilemap currLayer1, Tilemap currLayer2, Tilemap currLayer3, List<Button> currButtons)
+    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, List<Button> currButtons)
     {
         playerPosition = playerCurrPos;
-        layer1 = currLayer1;
-        layer2 = currLayer2;
-        layer3 = currLayer3;
-        buttons = currButtons;
+        layer1 = new Dictionary<Vector3Int, Cell>(currLayer1);
+        layer2 = new Dictionary<Vector3Int, Cell>(currLayer2);
+        layer3 = new Dictionary<Vector3Int, Cell>(currLayer3);
+        buttons = new List<Button>(currButtons);
+    }
+
+    public void SetSlimes(List<Slime> newSlimes){
+        slimes = new List<Slime>(newSlimes);
     }
 }
 
@@ -48,10 +53,18 @@ public class TickManager : MonoBehaviour
         }
     }
     void CallEveryOtherAction(){
-        playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
-        gameStates.Add(gridManager.GetGameState());
-        gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
+        if (playerMovement.isDead)
+        {
+            HandleDeath();
+        }
+
+        GameState currState = gridManager.GetGameState();
+        currState.SetSlimes(enemyManager.slimes);
+        gameStates.Add(currState);
+
         enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
+        playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
+        gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
     }
 
     void HandleDeath()
@@ -92,9 +105,10 @@ public class TickManager : MonoBehaviour
     {
         gridManager.playerPosition = state.playerPosition;
         playerMovement.transform.position = state.playerPosition;
-        gridManager.SetLayer(1, state.layer1);
-        gridManager.SetLayer(2, state.layer2);
-        gridManager.SetLayer(3, state.layer3);
+        gridManager.DictToTilemap(1, state.layer1);
+        gridManager.DictToTilemap(2, state.layer2);
+        gridManager.DictToTilemap(3, state.layer3);
         gridManager.SetButtons(state.buttons);
+        enemyManager.slimes = new List<Slime>(state.slimes);
     }
 }
