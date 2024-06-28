@@ -14,7 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public TickManager tickManager;
     private Vector3Int moveBuffer;
     private float secondPerTick;
-    public GridManager gridManager;
+    public GridManager gridManagerScript;
+    public bool isDead = false;
     
     // Start is called before the first frame update
     void Start()

@@ -15,100 +15,122 @@ public class Button{
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField]private TileBase[] tileBaseArray;
+    public Cell wall, floor;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
-    [SerializeField]private List<GridType> gridTypeClassList;
     [HideInInspector]public Vector3Int playerPosition;
-    public Dictionary<TileBase,GridType> tileBaseToGridClassData = new Dictionary<TileBase,GridType>();
     
     public List<Button> buttons;
 
 
 
     void Awake(){
-        PairUpTileBaseAndGridTypeClass();
+
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
         CheckAndTriggerButtons();
     }
 
-    public void PairUpTileBaseAndGridTypeClass(){
-        foreach (var gridTypeClass in gridTypeClassList){     //tileDataList is set above, contains gridClass
-            foreach (var tile in gridTypeClass.tile){    //in each class, there might be more than one kind of tile, e.g. 2 kinds of floor
-                tileBaseToGridClassData[tile] = gridTypeClass;
-            }
-        }
-    }
+    #region Get Set
     
-    public TileBase GetTile(int layer, Vector3Int v){
+    public Cell GetCell(int layer, Vector3Int position){
+        return layer switch
+        {
+            1 => (Cell)layer1.GetTile(position),
+            2 => (Cell)layer2.GetTile(position),
+            3 => (Cell)layer3.GetTile(position),
+            _ => null,
+        };
+    }
+    public void SetCell(int layer, Vector3Int position, Cell cell){
         switch(layer){
             case 1:
-                return layer1.GetTile(v);
+                layer1.SetTile(position, cell);break;
             case 2:
-                return layer2.GetTile(v);
+                layer2.SetTile(position, cell);break;
             case 3:
-                return layer3.GetTile(v);
+                layer3.SetTile(position, cell);break;
         }
-        return null;
     }
-    public void SetTile(int layer, Vector3Int v, TileBase t){
-        switch(layer){
+
+    public Tilemap GetLayer(int layer)
+    {
+        return layer switch
+        {
+            1 => layer1,
+            2 => layer2,
+            3 => layer3,
+            _ => null,
+        };
+    }
+
+    public void SetLayer(int layer, Tilemap tilemap)
+    {
+        switch (layer)
+        {
             case 1:
-                layer1.SetTile(v,t);break;
+                layer1 = tilemap; break;
             case 2:
-                layer2.SetTile(v,t);break;
+                layer2 = tilemap; break;
             case 3:
-                layer3.SetTile(v,t);break;
+                layer3 = tilemap; break;
         }
     }
-    public bool CheckIfLayer1HasObject(Vector3Int v){
-        TileBase tileToCheck = GetTile(1,v);
-        if (tileToCheck){
+
+    public GameState GetGameState()
+    {
+        return new GameState(playerPosition, layer1, layer2, layer3, buttons);
+    }
+
+    public void SetButtons(List<Button> newButtons){
+        buttons = newButtons;
+    }
+
+    #endregion
+
+    public bool CheckIfLayer1HasObject(Vector3Int position){
+        Cell cell = GetCell(1,position);
+        if (cell){
             return true;
         }
         return false;
     }
-    public bool CheckIfLayer2HasObject(Vector3Int v){
-        TileBase tileToCheck = GetTile(2,v);
-        if (tileToCheck){
+
+    public bool CheckIfLayer2HasObject(Vector3Int position){
+        Cell cell = GetCell(2,position);
+        if (cell){
             return true;
         }
         return false;
     }
-    
-    
-    public bool CheckIfLayer3HasObject(Vector3Int v){
-        TileBase tileToCheck = GetTile(3,v);
-        if (tileToCheck){
+    public bool CheckIfLayer3HasObject(Vector3Int position){
+        Cell cell = GetCell(3,position);
+        if (cell){
             return true;
         }
         return false;
     }
-    public bool CheckIfWalkable(Vector3Int v){
-        if(!CheckIfLayer1HasObject(v)){
+    public bool CheckIfWalkable(Vector3Int position){
+        if(!CheckIfLayer1HasObject(position)){
             return false;
         }
         else{
-            TileBase tileToCheck = GetTile(1,v);
-            GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
-            bool itsWalkability = gridClassItBelongsTo.walkable;
-            return itsWalkability;
+            Cell cell = GetCell(1, position);
+            return cell.isWalkable;
         }
         
     }
-    public bool CheckIfPushable(Vector3Int v){
-        TileBase tileToCheck = GetTile(3,v);
-        GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
-        bool itsPushability = gridClassItBelongsTo.pushable;
-        return itsPushability;
+
+    public bool CheckIfPushable(Vector3Int position){
+        Cell cell = GetCell(3, position);
+        return cell.isPushable;
     }
     public void MoveTile(int layer, Vector3Int from, Vector3Int to){
-        TileBase tileToMove = GetTile(layer, from);
-        SetTile(layer, from, null);
-        SetTile(layer, to, tileToMove);
+        Cell cell = GetCell(layer, from);
+        SetCell(layer, from, null);
+        SetCell(layer, to, cell);
     }
 
     public void CheckAndTriggerButtons(){
@@ -116,7 +138,7 @@ public class GridManager : MonoBehaviour
             if(CheckIfLayer3HasObject(button.position) || playerPosition == button.position){
                 if(!button.triggeredLastTick){
                     foreach(var door in button.doors){
-                        AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
+                        AlterTileBase(door, floor, wall);
                     }
                 }
                 button.triggeredLastTick = true;
@@ -124,19 +146,19 @@ public class GridManager : MonoBehaviour
             else{
                 if(button.triggeredLastTick){
                     foreach(var door in button.doors){
-                        AlterTileBase(door, tileBaseArray[0],tileBaseArray[1]);
+                        AlterTileBase(door, floor, wall);
                     }
                 }
                 button.triggeredLastTick = false;
             }
         }
     }
-    public void AlterTileBase(Vector3Int tilePosition, TileBase a, TileBase b){
-        if(GetTile(1,tilePosition) == a){
-            SetTile(1,tilePosition,b);
+    public void AlterTileBase(Vector3Int position, Cell cell1, Cell cell2){
+        if(GetCell(1,position) == cell1){
+            SetCell(1, position, cell2);
         }
-        else if(GetTile(1,tilePosition) == b){
-            SetTile(1,tilePosition,a);
+        else if(GetCell(1,v) == b){
+            SetCell(1,v,a);
         }
         
     }
