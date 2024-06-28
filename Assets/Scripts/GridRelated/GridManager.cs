@@ -64,6 +64,13 @@ public class GridManager : MonoBehaviour
                 layer3.SetTile(v,t);break;
         }
     }
+    public bool CheckIfLayer1HasObject(Vector3Int v){
+        TileBase tileToCheck = GetTile(1,v);
+        if (tileToCheck){
+            return true;
+        }
+        return false;
+    }
     public bool CheckIfLayer2HasObject(Vector3Int v){
         TileBase tileToCheck = GetTile(2,v);
         if (tileToCheck){
@@ -81,10 +88,16 @@ public class GridManager : MonoBehaviour
         return false;
     }
     public bool CheckIfWalkable(Vector3Int v){
-        TileBase tileToCheck = GetTile(1,v);
-        GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
-        bool itsWalkability = gridClassItBelongsTo.walkable;
-        return itsWalkability;
+        if(!CheckIfLayer1HasObject(v)){
+            return false;
+        }
+        else{
+            TileBase tileToCheck = GetTile(1,v);
+            GridType gridClassItBelongsTo = tileBaseToGridClassData[tileToCheck];
+            bool itsWalkability = gridClassItBelongsTo.walkable;
+            return itsWalkability;
+        }
+        
     }
     public bool CheckIfPushable(Vector3Int v){
         TileBase tileToCheck = GetTile(3,v);
