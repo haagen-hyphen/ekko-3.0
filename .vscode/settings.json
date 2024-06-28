@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "ekko-3.0.sln"
+    "dotnet.defaultSolution": "ekko-3.0.sln",
+    "dotnet.preferCSharpExtension": true
 }

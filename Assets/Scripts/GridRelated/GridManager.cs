@@ -42,17 +42,17 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    #region Get Set
     
     public TileBase GetTile(int layer, Vector3Int v){
-        switch(layer){
-            case 1:
-                return layer1.GetTile(v);
-            case 2:
-                return layer2.GetTile(v);
-            case 3:
-                return layer3.GetTile(v);
-        }
-        return null;
+        return layer switch
+        {
+            1 => layer1.GetTile(v),
+            2 => layer2.GetTile(v),
+            3 => layer3.GetTile(v),
+            _ => null,
+        };
     }
     public void SetTile(int layer, Vector3Int v, TileBase t){
         switch(layer){
@@ -64,6 +64,42 @@ public class GridManager : MonoBehaviour
                 layer3.SetTile(v,t);break;
         }
     }
+
+    public Tilemap GetLayer(int layer)
+    {
+        return layer switch
+        {
+            1 => layer1,
+            2 => layer2,
+            3 => layer3,
+            _ => null,
+        };
+    }
+
+    public void SetLayer(int layer, Tilemap tilemap)
+    {
+        switch (layer)
+        {
+            case 1:
+                layer1 = tilemap; break;
+            case 2:
+                layer2 = tilemap; break;
+            case 3:
+                layer3 = tilemap; break;
+        }
+    }
+
+    public GameState GetGameState()
+    {
+        return new GameState(playerPosition, layer1, layer2, layer3, buttons);
+    }
+
+    public void SetButtons(List<Button> newButtons){
+        buttons = newButtons;
+    }
+
+    #endregion
+
     public bool CheckIfLayer2HasObject(Vector3Int v){
         TileBase tileToCheck = GetTile(2,v);
         if (tileToCheck){
@@ -125,8 +161,5 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public GameState GetGameState()
-    {
-        return new GameState(playerPosition, layer1, layer2, layer3, buttons);
-    }
+    
 }
