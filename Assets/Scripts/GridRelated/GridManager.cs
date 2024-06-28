@@ -127,5 +127,21 @@ public class GridManager : MonoBehaviour
         }
         
     }
-    
+
+    public int[,] GetLocalGrid(Vector3Int centerPosition, int radius)
+    {
+        int[,] localGrid = new int[radius * 2 + 1, radius * 2 + 1];
+        for (int r = 0; r < radius * 2 + 1; r++)
+        {
+            for (int c = 0; c < radius * 2 + 1; c++)
+            {
+                Vector3Int aimedDestination = centerPosition + new Vector3Int(c - radius, - (r - radius), 0);
+                if(!CheckIfWalkable(aimedDestination) || CheckIfLayer3HasObject(aimedDestination))
+                {
+                    localGrid[r, c] = 1;
+                }
+            }
+        }
+        return localGrid;
+    }
 }
