@@ -15,7 +15,7 @@ public class Button{
 
 public class GridManager : MonoBehaviour
 {
-    public Cell wall, floor;
+    public Cell wall, floor, DeadlyEmpty;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;

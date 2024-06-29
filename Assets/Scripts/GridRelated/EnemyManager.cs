@@ -6,16 +6,45 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UIElements;
+using System.Security.Cryptography;
+using Unity.Collections;
+using Unity.Burst.Intrinsics;
 
-[System.Serializable]
-public class Slime{
+#region Declare Enemy
+public class Enemy
+{
     public Vector3Int position;
     public int tickSinceLastMove;
-    public int tickPerMove;
-    public int searchRadius;
-    
+    [HideInInspector]public int tickPerMove;
+    [HideInInspector]public int searchRadius;
+    [HideInInspector]public bool movable;
+    [HideInInspector]public bool ranged;
+    [HideInInspector]public int shootingRange;
+    public virtual void SetEnemyTypeData(){
+    }
 }
-
+[System.Serializable]
+public class Slime : Enemy
+{
+    public override void SetEnemyTypeData(){
+        movable = true;
+        ranged = false;
+        tickPerMove = 2;
+        searchRadius = 3;
+    }
+}
+[System.Serializable]
+public class SpearGoblin : Enemy
+{
+    public override void SetEnemyTypeData()
+    {
+        shootingRange = 5;
+        ranged = true;
+        movable = false;
+    }
+}
+#endregion
 
 
 
@@ -23,7 +52,17 @@ public class EnemyManager : MonoBehaviour
 {
     public GridManager gridManager; 
     public List<Slime> slimes;
+    public List<SpearGoblin> spearGoblins;
+    public GameObject spear;
     
+    void Awake(){
+        foreach (var slime in slimes){
+            slime.SetEnemyTypeData();
+        }
+        foreach (var spearGoblin in spearGoblins){
+            spearGoblin.SetEnemyTypeData();
+        }
+    }
     void PrintGrid(int[,] grid)
     {
         int rows = grid.GetLength(0); // Get number of rows
@@ -41,22 +80,22 @@ public class EnemyManager : MonoBehaviour
         }
     }
     
-    private Vector3Int GetSlimeMove(Slime slime)
+    private Vector3Int GetEnemyMove(Enemy enemy)
     {
         if (
-            math.abs((gridManager.playerPosition - slime.position)[0]) <= slime.searchRadius &&
-            math.abs((gridManager.playerPosition - slime.position)[1]) <= slime.searchRadius
+            math.abs((gridManager.playerPosition - enemy.position)[0]) <= enemy.searchRadius &&
+            math.abs((gridManager.playerPosition - enemy.position)[1]) <= enemy.searchRadius
         )
         {
 
-            int[,] localGrid = gridManager.GetLocalGrid(slime.position, slime.searchRadius);
+            int[,] localGrid = gridManager.GetLocalGrid(enemy.position, enemy.searchRadius);
 
-            (int, int) startingPosition = (slime.searchRadius, slime.searchRadius);
-            (int, int) endingPosition = ( slime.searchRadius - (gridManager.playerPosition - slime.position )[1] , slime.searchRadius + (gridManager.playerPosition - slime.position )[0]);
+            (int, int) startingPosition = (enemy.searchRadius, enemy.searchRadius);
+            (int, int) endingPosition = ( enemy.searchRadius - (gridManager.playerPosition - enemy.position )[1] , enemy.searchRadius + (gridManager.playerPosition - enemy.position )[0]);
             List<(int r, int c)> thePath = AStarSearch2d(startingPosition, endingPosition, localGrid);
             
             if (thePath.Count == 0) return Vector3Int.zero;
-            return new Vector3Int( thePath[0].c - slime.searchRadius , -(thePath[0].r - slime.searchRadius),0);
+            return new Vector3Int( thePath[0].c - enemy.searchRadius , -(thePath[0].r - enemy.searchRadius),0);
             
         }
 
@@ -69,7 +108,7 @@ public class EnemyManager : MonoBehaviour
             slime.tickSinceLastMove += 1;
             if (slime.tickSinceLastMove >= slime.tickPerMove)
             {
-                Vector3Int slimeMoveBuffer = GetSlimeMove(slime);
+                Vector3Int slimeMoveBuffer = GetEnemyMove(slime);
                 if (slimeMoveBuffer != Vector3Int.zero)
                 {
                     gridManager.MoveTile(3, slime.position, slime.position + slimeMoveBuffer);
@@ -80,11 +119,45 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    public bool isShooting = false;
+    private void AllCheckShoot(){
+        foreach (var spearGoblin in spearGoblins){
+            if(!isShooting){
+                if( gridManager.playerPosition.x == spearGoblin.position.x && math.abs(gridManager.playerPosition.y - spearGoblin.position.y)<=spearGoblin.shootingRange){
+                    Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).y);
+                    StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
+                }
+                else if(gridManager.playerPosition.y == spearGoblin.position.y && math.abs(gridManager.playerPosition.x - spearGoblin.position.x)<=spearGoblin.shootingRange){
+                    Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).x);
+                    StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
+                }
+            }
+        }
+    }
 
+    IEnumerator PrepareAndShoot(Vector3Int from, int shootingRange, Vector3Int unitDirection){
+        isShooting = true;
+        //put "!" beside goblin
+        //no need to wait for 1 tick here because tickmng calls player after enemy, enemy alr lag 1 tick
+        GameObject x = Instantiate(spear);
+        for(int i = 1; i <= shootingRange; i++){
+            gridManager.SetCell(3, from + i*unitDirection, gridManager.DeadlyEmpty);
+        }
+        for(int i = 1; i <= shootingRange; i++){
+            x.transform.position = from + i*unitDirection;
+            yield return new WaitForSeconds(0.5f/shootingRange);
+        }
+        Destroy(x);
+        for(int i = 1; i <= shootingRange; i++){
+            gridManager.SetCell(3, from + i*unitDirection, null);
+        }
+        isShooting = false;
+    }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed)
     {
         MoveAllSlime();
+        AllCheckShoot();
     }
     
     private static int Heuristic((int r, int c) a, (int r, int c) b)

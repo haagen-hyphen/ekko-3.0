@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetAbilityImage(abilityImages[0]);
+        SetAbilityImage(0);
     }
 
     // Update is called once per frame
@@ -46,8 +46,8 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void SetAbilityImage(Sprite s){
-        abilitySlot.GetComponent<UnityEngine.UI.Image>().sprite = s;
+    public void SetAbilityImage(int imageIndex){
+        abilitySlot.GetComponent<UnityEngine.UI.Image>().sprite = abilityImages[imageIndex];
     }
 
     public void RunTimeline(){

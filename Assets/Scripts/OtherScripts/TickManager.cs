@@ -67,7 +67,7 @@ public class TickManager : MonoBehaviour
         gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
     }
 
-    void HandleDeath()
+    public void HandleDeath()
     {
         StartCoroutine(DeathCoroutine());
     }

@@ -6,6 +6,7 @@ using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3Int moveBuffer;
     private float secondPerTick;
     public GridManager gridManager;
+    public UIManager uIManager;
     public bool isDead = false;
     
     // Start is called before the first frame update
@@ -32,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
         lastMoveTimeStamp = Time.time;
         MoveAndClearMoveBuffer();
+        CheckDeath();
     }
 
     void StoreMoveBuffer(){
@@ -103,19 +106,19 @@ public class PlayerMovement : MonoBehaviour
         moveBuffer = Vector3Int.zero;
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
+    void CheckDeath(){
+        if(gridManager.GetCell(3,gridManager.playerPosition) == gridManager.DeadlyEmpty){
+            Die(1);
+        }
+    }
 
-    // BELOW ARE THINGS RELATED TO EKKO
-    // if (Time.time - _lastMoveTimeStamp > moveCd)
-    //         {   _positionArray.Add(transform.position);
-    //             numberOfTickPassed += 1;
-    //             playerShadow.transform.position = _positionArray[numberOfTickPassed - 5];
+    void Die(int getAbilityIndex){
+        //tickManager.HandleDeath();  joseph's, time-related, visually a bit buggy
 
-    // if(Input.GetKeyDown(KeyCode.F))
-    //     {
-    //         transform.position = _positionArray[numberOfTickPassed - 5];
-    //         playerShadow.transform.position = _positionArray[numberOfTickPassed - 2*5 ];
-    //         _positionArray.RemoveRange(_positionArray.Count-5,5);
-    //         numberOfTickPassed -= 5;
-    //     }
+        //GetAbility
+        
+        uIManager.SetAbilityImage(getAbilityIndex);
+    }
+
 
 }
