@@ -20,6 +20,10 @@ public class PlayerMovement : MonoBehaviour
     public bool isDead = false;
     
     // Start is called before the first frame update
+    void Awake(){
+        gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+    }
+    
     void Start()
     {
         secondPerTick = tickManager.secondPerTick;
@@ -32,9 +36,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
+        CheckDeath();
         lastMoveTimeStamp = Time.time;
         MoveAndClearMoveBuffer();
-        CheckDeath();
     }
 
     void StoreMoveBuffer(){
@@ -107,17 +111,18 @@ public class PlayerMovement : MonoBehaviour
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
     void CheckDeath(){
-        if(gridManager.GetCell(3,gridManager.playerPosition) == gridManager.DeadlyEmpty){
-            Die(1);
+        if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
+            Die(gridManager.GetCell(4,gridManager.playerPosition));
+            Debug.Log("died bcoz checkdeath");
         }
     }
 
-    void Die(int getAbilityIndex){
-        //tickManager.HandleDeath();  joseph's, time-related, visually a bit buggy
+    public void Die(Cell killedBy){
+        moveBuffer = Vector3Int.zero;
+        uIManager.SetAbilityImage(killedBy);
 
         //GetAbility
-        
-        uIManager.SetAbilityImage(getAbilityIndex);
+        tickManager.HandleDeath();
     }
 
 

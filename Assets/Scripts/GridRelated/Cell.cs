@@ -9,4 +9,5 @@ public class Cell : Tile
     public bool isWalkable;
     public bool isPushable;
     public bool isTimeImmune;
+    public Sprite abilityImage;
 }

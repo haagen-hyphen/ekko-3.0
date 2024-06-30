@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 364df142afac4354b9b64cbcfb118980, type: 3}
-  m_Name: Slimy Wall
+  m_Name: 3SpearGoblin
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 437e8c2d336bd4b4ba5c504c558403ba, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c5d70174053134f488c79be40b5385e1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

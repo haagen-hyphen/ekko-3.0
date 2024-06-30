@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 364df142afac4354b9b64cbcfb118980, type: 3}
-  m_Name: DeadlyEmpty
+  m_Name: 4TrapEmpty
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3310ad72da5fc224f8d287e8aec66463, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -37,3 +37,4 @@ MonoBehaviour:
   isWalkable: 0
   isPushable: 0
   isTimeImmune: 0
+  abilityImage: {fileID: 21300000, guid: 5ad5a5841a3215c49a4ef95b5ee3286a, type: 3}

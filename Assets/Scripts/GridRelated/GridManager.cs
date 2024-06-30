@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -13,20 +15,30 @@ public class Button{
     public bool triggeredLastTick = false;
 }
 
+[System.Serializable]
+public class Trap{
+    public Vector3Int position;
+}
+
 public class GridManager : MonoBehaviour
 {
-    public Cell wall, floor, DeadlyEmpty;
+    public Cell wall, floor, spear, trapEmpty;
+    public PlayerMovement playerMovement;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
+    [SerializeField]private Tilemap layer4;
     [HideInInspector]public Vector3Int playerPosition;
     
     public List<Button> buttons;
+    public List<Trap> traps;
 
 
 
     void Awake(){
-
+        foreach(var trap in traps){
+            SetCell(4, trap.position, trapEmpty);
+        }
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
@@ -41,6 +53,7 @@ public class GridManager : MonoBehaviour
             1 => (Cell)layer1.GetTile(position),
             2 => (Cell)layer2.GetTile(position),
             3 => (Cell)layer3.GetTile(position),
+            4 => (Cell)layer4.GetTile(position),
             _ => null,
         };
     }
@@ -52,6 +65,12 @@ public class GridManager : MonoBehaviour
                 layer2.SetTile(position, cell);break;
             case 3:
                 layer3.SetTile(position, cell);break;
+            case 4:
+                layer4.SetTile(position, cell);
+                if(position == playerPosition){
+                    playerMovement.Die(cell);
+                }
+                break;
         }
     }
 
@@ -62,13 +81,14 @@ public class GridManager : MonoBehaviour
             1 => layer1,
             2 => layer2,
             3 => layer3,
+            4 => layer4,
             _ => null,
         };
     }
 
     public GameState GetGameState()
     {
-        return new GameState(playerPosition, TilemapToDict(1), TilemapToDict(2), TilemapToDict(3), buttons);
+        return new GameState(playerPosition, TilemapToDict(1), TilemapToDict(2), TilemapToDict(3), TilemapToDict(4), buttons);
     }
 
     public void SetButtons(List<Button> newButtons){
@@ -116,6 +136,18 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
+        if (layer == 4)
+        {
+            for (int i = layer4.cellBounds.min.x; i < layer4.cellBounds.max.x; i++)
+            {
+                for (int j = layer4.cellBounds.min.y; j < layer4.cellBounds.max.y; j++)
+                {
+                    Vector3Int pos = new(i,j,0);
+                    Cell cell = GetCell(4, pos);
+                    dict[pos] = cell; 
+                }
+            }
+        }
         return dict;
     }
 
@@ -145,6 +177,14 @@ public class GridManager : MonoBehaviour
                 SetCell(3, item.Key, item.Value);
             }
         }
+        if (layer == 4)
+        {
+            layer4.ClearAllTiles();
+            foreach(var item in dict)
+            {
+                SetCell(4, item.Key, item.Value);
+            }
+        }
     }
 
     public bool CheckIfLayer1HasObject(Vector3Int position){
@@ -164,6 +204,13 @@ public class GridManager : MonoBehaviour
     }
     public bool CheckIfLayer3HasObject(Vector3Int position){
         Cell cell = GetCell(3,position);
+        if (cell){
+            return true;
+        }
+        return false;
+    }
+    public bool CheckIfLayer4HasObject(Vector3Int position){
+        Cell cell = GetCell(4,position);
         if (cell){
             return true;
         }
