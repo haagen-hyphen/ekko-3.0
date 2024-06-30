@@ -108,7 +108,10 @@ public class GridManager : MonoBehaviour
                 {
                     Vector3Int pos = new(i,j,0);
                     Cell cell = GetCell(1, pos);
-                    dict[pos] = cell; 
+                    if (cell)
+                    {
+                        dict[pos] = cell; 
+                    }
                 }
             }
         }
@@ -120,7 +123,10 @@ public class GridManager : MonoBehaviour
                 {
                     Vector3Int pos = new(i,j,0);
                     Cell cell = GetCell(2, pos);
-                    dict[pos] = cell; 
+                    if (cell)
+                    {
+                        dict[pos] = cell;    
+                    }
                 }
             }
         }
@@ -132,7 +138,10 @@ public class GridManager : MonoBehaviour
                 {
                     Vector3Int pos = new(i,j,0);
                     Cell cell = GetCell(3, pos);
-                    dict[pos] = cell; 
+                    if (cell)
+                    {
+                        dict[pos] = cell; 
+                    }
                 }
             }
         }
@@ -144,7 +153,10 @@ public class GridManager : MonoBehaviour
                 {
                     Vector3Int pos = new(i,j,0);
                     Cell cell = GetCell(4, pos);
-                    dict[pos] = cell; 
+                    if (cell)
+                    {
+                        dict[pos] = cell; 
+                    }
                 }
             }
         }
