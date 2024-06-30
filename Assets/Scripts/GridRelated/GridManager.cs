@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -11,6 +12,11 @@ public class Button{
 
     [HideInInspector]
     public bool triggeredLastTick = false;
+
+    public Button Clone()
+    {
+        return (Button)MemberwiseClone();
+    }
 }
 
 public class GridManager : MonoBehaviour
@@ -68,11 +74,11 @@ public class GridManager : MonoBehaviour
 
     public GameState GetGameState()
     {
-        return new GameState(playerPosition, TilemapToDict(1), TilemapToDict(2), TilemapToDict(3), buttons);
+        return new GameState(playerPosition, TilemapToDict(1), TilemapToDict(2), TilemapToDict(3));
     }
 
     public void SetButtons(List<Button> newButtons){
-        buttons = new List<Button>(newButtons);
+        buttons = newButtons.Select(item => item.Clone()).ToList();
     }
 
     #endregion

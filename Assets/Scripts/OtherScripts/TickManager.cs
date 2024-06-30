@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -11,19 +12,22 @@ public class GameState
     public Dictionary<Vector3Int, Cell> layer2;
     public Dictionary<Vector3Int, Cell> layer3;
     public List<Button> buttons;
-    public List<Slime> slimes;
+    public List<Enemy> enemies;
 
-    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, List<Button> currButtons)
+    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3)
     {
         playerPosition = playerCurrPos;
         layer1 = new Dictionary<Vector3Int, Cell>(currLayer1);
         layer2 = new Dictionary<Vector3Int, Cell>(currLayer2);
         layer3 = new Dictionary<Vector3Int, Cell>(currLayer3);
-        buttons = new List<Button>(currButtons);
     }
 
-    public void SetSlimes(List<Slime> newSlimes){
-        slimes = new List<Slime>(newSlimes);
+    public void SetEnemies(List<Enemy> newEnemies){
+        enemies = newEnemies.Select(item => item.Clone()).ToList();
+    }
+
+    public void SetButtons(List<Button> newButtons){
+        buttons = newButtons.Select(item => item.Clone()).ToList();
     }
 }
 
@@ -59,7 +63,8 @@ public class TickManager : MonoBehaviour
         }
 
         GameState currState = gridManager.GetGameState();
-        currState.SetSlimes(enemyManager.slimes);
+        currState.SetEnemies(enemyManager.enemies);
+        currState.SetButtons(gridManager.buttons);
         gameStates.Add(currState);
 
         enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
@@ -109,6 +114,6 @@ public class TickManager : MonoBehaviour
         gridManager.DictToTilemap(2, state.layer2);
         gridManager.DictToTilemap(3, state.layer3);
         gridManager.SetButtons(state.buttons);
-        enemyManager.slimes = new List<Slime>(state.slimes);
+        enemyManager.SetEnemies(state.enemies);
     }
 }

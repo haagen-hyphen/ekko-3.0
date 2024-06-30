@@ -23,6 +23,10 @@ public class Enemy
     [HideInInspector]public int shootingRange;
     public virtual void SetEnemyTypeData(){
     }
+
+    public Enemy Clone(){
+        return (Enemy)MemberwiseClone();
+    }
 }
 [System.Serializable]
 public class Slime : Enemy
@@ -53,16 +57,32 @@ public class EnemyManager : MonoBehaviour
     public GridManager gridManager; 
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
+    public List<Enemy> enemies;
     public GameObject spear;
     
     void Awake(){
-        foreach (var slime in slimes){
-            slime.SetEnemyTypeData();
+        foreach (Slime slime in slimes)
+        {
+            enemies.Add(slime.Clone());
         }
-        foreach (var spearGoblin in spearGoblins){
-            spearGoblin.SetEnemyTypeData();
+
+        foreach (SpearGoblin spearGoblin in spearGoblins)
+        {
+            enemies.Add(spearGoblin.Clone());
+        }
+        foreach(Enemy enemy in enemies){
+            enemy.SetEnemyTypeData();
         }
     }
+
+    #region Get Set
+
+    public void SetEnemies(List<Enemy> newEnemies){
+        enemies = newEnemies.Select(item => item.Clone()).ToList();
+    }
+
+    #endregion
+
     void PrintGrid(int[,] grid)
     {
         int rows = grid.GetLength(0); // Get number of rows
