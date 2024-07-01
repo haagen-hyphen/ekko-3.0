@@ -67,7 +67,7 @@ public class GridManager : MonoBehaviour
                 layer3.SetTile(position, cell);break;
             case 4:
                 layer4.SetTile(position, cell);
-                if(position == playerPosition){
+                if(position == playerPosition && cell != null){
                     playerMovement.Die(cell);
                 }
                 break;

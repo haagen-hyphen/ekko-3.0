@@ -127,11 +127,11 @@ public class EnemyManager : MonoBehaviour
         foreach (var spearGoblin in spearGoblins){
             if( gridManager.playerPosition.x == spearGoblin.position.x && math.abs(gridManager.playerPosition.y - spearGoblin.position.y)<=spearGoblin.shootingRange){
                 Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).y);
-                StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
+                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
             }
             else if(gridManager.playerPosition.y == spearGoblin.position.y && math.abs(gridManager.playerPosition.x - spearGoblin.position.x)<=spearGoblin.shootingRange){
                 Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).x);
-                StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
+                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
             }
         }
     }
