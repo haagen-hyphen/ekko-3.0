@@ -94,13 +94,13 @@ public class TickManager : MonoBehaviour
         if (gameStates.Count >= 5)
         {
             GameState previousState = gameStates[gameStates.Count - 5];
-            RevertToGameState(previousState);
+            GridManager.Instance.RevertGameState(previousState);
             gameStates.RemoveRange(gameStates.Count - 5, 5);
         }
         else if (gameStates.Count > 0)
         {
             GameState previousState = gameStates[0];
-            RevertToGameState(previousState);
+            GridManager.Instance.RevertGameState(previousState);
             gameStates = new();
         }
 

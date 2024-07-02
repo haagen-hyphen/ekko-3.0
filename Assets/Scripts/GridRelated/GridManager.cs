@@ -33,6 +33,8 @@ public class Trap{
 
 public class GridManager : MonoBehaviour
 {
+    #region Variables
+    public static GridManager Instance { get; private set; }
     public Cell wall, floor, spear, trapEmpty;
     public PlayerMovement playerMovement;
     [SerializeField]private Tilemap layer1;
@@ -41,17 +43,31 @@ public class GridManager : MonoBehaviour
     [SerializeField]private Tilemap layer4;
     [HideInInspector]public Vector3Int playerPosition;
 
-    private Dictionary<Vector3Int, Cell> layer1TimeImmune;
-    private Dictionary<Vector3Int, Cell> layer2TimeImmune;
-    private Dictionary<Vector3Int, Cell> layer3TimeImmune;
-    private Dictionary<Vector3Int, Cell> layer4TimeImmune;
+    public Dictionary<Vector3Int, Cell> layer1TimeImmune = new();
+    public Dictionary<Vector3Int, Cell> layer2TimeImmune = new();
+    public Dictionary<Vector3Int, Cell> layer3TimeImmune = new();
+    public Dictionary<Vector3Int, Cell> layer4TimeImmune = new();
+
+    public Dictionary<Vector3Int, Cell>[] timeImmuneObjects = new Dictionary<Vector3Int, Cell>[4];
     
     public List<Button> buttons;
     public List<Trap> traps;
 
+    #endregion
 
 
     void Awake(){
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+
+        timeImmuneObjects = new Dictionary<Vector3Int, Cell>[] {layer1TimeImmune, layer2TimeImmune, layer3TimeImmune, layer4TimeImmune};
+
         foreach(var trap in traps){
             SetCell(4, trap.position, trapEmpty);
         }        
@@ -67,6 +83,51 @@ public class GridManager : MonoBehaviour
                     if (cell.isTimeImmune)
                     {
                         layer1TimeImmune[pos] = cell;
+                    }
+                }
+            }
+        }
+        for (int i = layer2.cellBounds.min.x; i < layer2.cellBounds.max.x; i++)
+        {
+            for (int j = layer2.cellBounds.min.y; j < layer2.cellBounds.max.y; j++)
+            {
+                Vector3Int pos = new(i,j,0);
+                Cell cell = GetCell(2, pos);
+                if (cell)
+                {
+                    if (cell.isTimeImmune)
+                    {
+                        layer2TimeImmune[pos] = cell;
+                    }
+                }
+            }
+        }
+        for (int i = layer3.cellBounds.min.x; i < layer3.cellBounds.max.x; i++)
+        {
+            for (int j = layer3.cellBounds.min.y; j < layer3.cellBounds.max.y; j++)
+            {
+                Vector3Int pos = new(i,j,0);
+                Cell cell = GetCell(3, pos);
+                if (cell)
+                {
+                    if (cell.isTimeImmune)
+                    {
+                        layer3TimeImmune[pos] = cell;
+                    }
+                }
+            }
+        }
+        for (int i = layer4.cellBounds.min.x; i < layer4.cellBounds.max.x; i++)
+        {
+            for (int j = layer4.cellBounds.min.y; j < layer4.cellBounds.max.y; j++)
+            {
+                Vector3Int pos = new(i,j,0);
+                Cell cell = GetCell(4, pos);
+                if (cell)
+                {
+                    if (cell.isTimeImmune)
+                    {
+                        layer4TimeImmune[pos] = cell;
                     }
                 }
             }
@@ -129,6 +190,8 @@ public class GridManager : MonoBehaviour
 
     #endregion
 
+    #region Time Immune
+
     public Dictionary<Vector3Int, Cell> TilemapToDict(int layer)
     {
         Dictionary<Vector3Int, Cell> dict = new();
@@ -142,7 +205,10 @@ public class GridManager : MonoBehaviour
                     Cell cell = GetCell(1, pos);
                     if (cell)
                     {
-                        dict[pos] = cell; 
+                        if (!cell.isTimeImmune)
+                        {
+                            dict[pos] = cell; 
+                        }
                     }
                 }
             }
@@ -157,7 +223,10 @@ public class GridManager : MonoBehaviour
                     Cell cell = GetCell(2, pos);
                     if (cell)
                     {
-                        dict[pos] = cell;    
+                        if (!cell.isTimeImmune)
+                        {
+                            dict[pos] = cell; 
+                        }  
                     }
                 }
             }
@@ -172,7 +241,10 @@ public class GridManager : MonoBehaviour
                     Cell cell = GetCell(3, pos);
                     if (cell)
                     {
-                        dict[pos] = cell; 
+                        if (!cell.isTimeImmune)
+                        {
+                            dict[pos] = cell; 
+                        }
                     }
                 }
             }
@@ -187,7 +259,10 @@ public class GridManager : MonoBehaviour
                     Cell cell = GetCell(4, pos);
                     if (cell)
                     {
-                        dict[pos] = cell; 
+                        if (!cell.isTimeImmune)
+                        {
+                            dict[pos] = cell; 
+                        }
                     }
                 }
             }
@@ -230,6 +305,44 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    public void RevertGameState(GameState state){
+        playerPosition = state.playerPosition;
+        playerMovement.transform.position = state.playerPosition;
+        DictToTilemap(1, state.layer1);
+        DictToTilemap(2, state.layer2);
+        DictToTilemap(3, state.layer3);
+        DictToTilemap(4, state.layer4);
+        SetButtons(state.buttons);
+        EnemyManager.Instance.SetEnemies(state.enemies);
+        foreach (var item in layer1TimeImmune)
+        {
+            Debug.Log(item.Key);
+            Debug.Log(item.Value);
+
+            SetCell(1, item.Key, item.Value);
+        }
+        foreach (var item in layer2TimeImmune)
+        {
+            Debug.Log(item.Key);
+            Debug.Log(item.Value);
+            SetCell(2, item.Key, item.Value);
+        }
+        foreach (var item in layer3TimeImmune)
+        {
+            Debug.Log(item.Key);
+            Debug.Log(item.Value);
+            SetCell(3, item.Key, item.Value);
+        }
+        foreach (var item in layer4TimeImmune)
+        {
+            Debug.Log(item.Key);
+            Debug.Log(item.Value);
+            SetCell(4, item.Key, item.Value);
+        }
+    }
+
+    #endregion
 
     public bool CheckIfLayer1HasObject(Vector3Int position){
         Cell cell = GetCell(1,position);
@@ -275,8 +388,13 @@ public class GridManager : MonoBehaviour
         Cell cell = GetCell(3, position);
         return cell.isPushable;
     }
-    public void MoveTile(int layer, Vector3Int from, Vector3Int to){
+    public void MoveCell(int layer, Vector3Int from, Vector3Int to){
         Cell cell = GetCell(layer, from);
+        if (timeImmuneObjects[layer-1].ContainsKey(from))
+        {
+            timeImmuneObjects[layer-1].Remove(from);
+            timeImmuneObjects[layer-1][to] = cell;
+        }
         SetCell(layer, from, null);
         SetCell(layer, to, cell);
     }
@@ -301,6 +419,8 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    // Need to do time immune dictionary manipulation
     public void AlterTileBase(Vector3Int position, Cell cell1, Cell cell2){
         if(GetCell(1,position) == cell1){
             SetCell(1, position, cell2);

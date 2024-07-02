@@ -98,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
             if(gridManager.CheckIfLayer3HasObject(aimedDestination)){
                 if(gridManager.CheckIfPushable(aimedDestination)){
                     if(gridManager.CheckIfWalkable(positionToBePushedTo)){
-                        gridManager.MoveTile(3, aimedDestination, positionToBePushedTo);
+                        gridManager.MoveCell(3, aimedDestination, positionToBePushedTo);
                         transform.position += moveBuffer;
                     }
                 }

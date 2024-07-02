@@ -16,19 +16,23 @@ public class Enemy
 {
     public Vector3Int position;
     public int tickSinceLastMove;
-    [HideInInspector]public int tickPerMove;
-    [HideInInspector]public int searchRadius;
-    [HideInInspector]public bool movable;
-    [HideInInspector]public bool ranged;
-    [HideInInspector]public int shootingRange;
+    public int tickPerMove;
+    public int searchRadius;
+    public bool movable;
+    public bool ranged;
+    public int shootingRange;
     public virtual void SetEnemyTypeData(){
+    }
+    
+    public virtual void OnTick(){
+
     }
 
     public Enemy Clone(){
         return (Enemy)MemberwiseClone();
     }
 }
-[System.Serializable]
+[Serializable]
 public class Slime : Enemy
 {
     public override void SetEnemyTypeData(){
@@ -37,8 +41,23 @@ public class Slime : Enemy
         tickPerMove = 2;
         searchRadius = 3;
     }
+
+    public override void OnTick()
+    {
+        tickSinceLastMove += 1;
+        if (tickSinceLastMove >= tickPerMove)
+        {
+            Vector3Int slimeMoveBuffer = EnemyManager.Instance.GetEnemyMove(this);
+            if (slimeMoveBuffer != Vector3Int.zero)
+            {
+                GridManager.Instance.MoveCell(3, position, position + slimeMoveBuffer);
+                position += slimeMoveBuffer;
+                tickSinceLastMove = 0;
+            }
+        }
+    }
 }
-[System.Serializable]
+[Serializable]
 public class SpearGoblin : Enemy
 {
     public override void SetEnemyTypeData()
@@ -46,6 +65,20 @@ public class SpearGoblin : Enemy
         shootingRange = 5;
         ranged = true;
         movable = false;
+        Debug.Log("Initialized");
+    }
+
+    public override void OnTick()
+    {
+        GridManager gridManager = GridManager.Instance;
+        if( gridManager.playerPosition.x == position.x && math.abs(gridManager.playerPosition.y - position.y)<=shootingRange){
+            Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).y);
+            EnemyManager.Instance.HandleGoblin(position, shootingRange, unitDirection);
+        }
+        else if(gridManager.playerPosition.y == position.y && math.abs(gridManager.playerPosition.x - position.x)<=shootingRange){
+            Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).x);
+            EnemyManager.Instance.HandleGoblin(position, shootingRange, unitDirection);
+        }
     }
 }
 #endregion
@@ -54,12 +87,22 @@ public class SpearGoblin : Enemy
 
 public class EnemyManager : MonoBehaviour
 {
+    public static EnemyManager Instance;
     public GridManager gridManager; 
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
     public List<Enemy> enemies = new();
     
     void Awake(){
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+        
         foreach (Slime slime in slimes)
         {
             enemies.Add(slime.Clone());
@@ -70,13 +113,16 @@ public class EnemyManager : MonoBehaviour
             enemies.Add(spearGoblin.Clone());
         }
         foreach(Enemy enemy in enemies){
+            print(enemy);
             enemy.SetEnemyTypeData();
         }
     }
     public void AnythingToBeDoneWheneverTicks(int tickPassed)
     {
-        MoveAllSlime();
-        AllCheckShoot();
+        foreach (var enemy in enemies)
+        {
+            enemy.OnTick();
+        }
     }
 
     #region Get Set
@@ -104,7 +150,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
     
-    private Vector3Int GetEnemyMove(Enemy enemy)
+    public Vector3Int GetEnemyMove(Enemy enemy)
     {
         if (
             math.abs((gridManager.playerPosition - enemy.position)[0]) <= enemy.searchRadius &&
@@ -129,31 +175,12 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (var slime in slimes)
         {
-            slime.tickSinceLastMove += 1;
-            if (slime.tickSinceLastMove >= slime.tickPerMove)
-            {
-                Vector3Int slimeMoveBuffer = GetEnemyMove(slime);
-                if (slimeMoveBuffer != Vector3Int.zero)
-                {
-                    gridManager.MoveTile(3, slime.position, slime.position + slimeMoveBuffer);
-                    slime.position += slimeMoveBuffer;
-                    slime.tickSinceLastMove = 0;
-                }
-            }
+            
         }
     }
 
-    private void AllCheckShoot(){
-        foreach (var spearGoblin in spearGoblins){
-            if( gridManager.playerPosition.x == spearGoblin.position.x && math.abs(gridManager.playerPosition.y - spearGoblin.position.y)<=spearGoblin.shootingRange){
-                Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).y);
-                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
-            }
-            else if(gridManager.playerPosition.y == spearGoblin.position.y && math.abs(gridManager.playerPosition.x - spearGoblin.position.x)<=spearGoblin.shootingRange){
-                Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).x);
-                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
-            }
-        }
+    public void HandleGoblin(Vector3Int from, int shootingRange, Vector3Int unitDirection){
+        StartCoroutine(PrepareAndShoot(from, shootingRange, unitDirection));
     }
 
     IEnumerator PrepareAndShoot(Vector3Int from, int shootingRange, Vector3Int unitDirection){
