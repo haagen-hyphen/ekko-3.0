@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,7 +8,7 @@ using UnityEngine.Tilemaps;
 public class Cell : Tile
 {
     public bool isWalkable;
-    public bool isPushable;
     public bool isTimeImmune;
     public Sprite abilityImage;
 }
+

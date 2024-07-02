@@ -32,6 +32,10 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetButtonDown("Fire1")){
+           Debug.Log(MousePositionToCellPosition()); 
+           EnemyManager.Instance.HandleGoblin(gridManager.playerPosition,5,new Vector3Int(1,0,0));
+        }
         StoreMoveBuffer();
     }
 
@@ -89,22 +93,29 @@ public class PlayerMovement : MonoBehaviour
     void MoveAndClearMoveBuffer(){
         Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
-        Vector3Int positionToBePushedTo = currentPositionInt + 2*moveBuffer;        //for button
+        //can't walk don't walk
         if(!gridManager.CheckIfWalkable(aimedDestination)){
             moveBuffer = Vector3Int.zero;
-            return;
         }
-        if(gridManager.CheckIfWalkable(aimedDestination)){
-            if(gridManager.CheckIfLayer3HasObject(aimedDestination)){
-                if(gridManager.CheckIfPushable(aimedDestination)){
-                    if(gridManager.CheckIfWalkable(positionToBePushedTo)){
-                        gridManager.MoveCell(3, aimedDestination, positionToBePushedTo);
-                        transform.position += moveBuffer;
-                    }
-                }
-            }
-            else{
+        //can walk see if got box
+        else{
+            var cell3 = GridManager.Instance.GetCell(3, aimedDestination);
+            //no box then go
+            if(cell3 == null){
                 transform.position += moveBuffer;
+            }
+            //got box see if can push box(es)
+            else if(gridManager.IsOfType<Box>(cell3)){
+                Box box = (Box)cell3;
+                //can push so push
+                if(box.CheckPushability(aimedDestination+moveBuffer,moveBuffer)){
+                    box.PushBoxes(aimedDestination,moveBuffer);
+                    transform.position += moveBuffer;
+                }
+                //can't push don't walk
+                else{
+                    moveBuffer = Vector3Int.zero;
+                }
             }
         }
         moveBuffer = Vector3Int.zero;
@@ -113,7 +124,6 @@ public class PlayerMovement : MonoBehaviour
     void CheckDeath(){
         if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
             Die(gridManager.GetCell(4,gridManager.playerPosition));
-            Debug.Log("died bcoz checkdeath");
         }
     }
 
@@ -124,6 +134,16 @@ public class PlayerMovement : MonoBehaviour
         //GetAbility
         tickManager.HandleDeath();
     }
+
+    public Vector3Int MousePositionToCellPosition(){
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
+        Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
+        return cellPosition;
+        
+    }
+    
+    
 
 
 }

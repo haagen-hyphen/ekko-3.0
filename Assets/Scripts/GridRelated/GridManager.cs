@@ -140,6 +140,10 @@ public class GridManager : MonoBehaviour
 
     #region Get Set
     
+    public bool IsOfType<T>(object obj)
+    {
+        return obj is T;
+    }
     public Cell GetCell(int layer, Vector3Int position){
         return layer switch
         {
@@ -384,10 +388,6 @@ public class GridManager : MonoBehaviour
         
     }
 
-    public bool CheckIfPushable(Vector3Int position){
-        Cell cell = GetCell(3, position);
-        return cell.isPushable;
-    }
     public void MoveCell(int layer, Vector3Int from, Vector3Int to){
         Cell cell = GetCell(layer, from);
         if (timeImmuneObjects[layer-1].ContainsKey(from))
