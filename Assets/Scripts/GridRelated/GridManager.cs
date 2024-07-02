@@ -26,13 +26,32 @@ public class GridManager : MonoBehaviour
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
     [HideInInspector]public Vector3Int playerPosition;
+
+    private Dictionary<Vector3Int, Cell> layer1TimeImmune;
+    private Dictionary<Vector3Int, Cell> layer2TimeImmune;
+    private Dictionary<Vector3Int, Cell> layer3TimeImmune;
+    private Dictionary<Vector3Int, Cell> layer4TimeImmune;
     
     public List<Button> buttons;
 
 
 
     void Awake(){
-
+        for (int i = layer1.cellBounds.min.x; i < layer1.cellBounds.max.x; i++)
+        {
+            for (int j = layer1.cellBounds.min.y; j < layer1.cellBounds.max.y; j++)
+            {
+                Vector3Int pos = new(i,j,0);
+                Cell cell = GetCell(1, pos);
+                if (cell)
+                {
+                    if (cell.isTimeImmune)
+                    {
+                        layer1TimeImmune[pos] = cell;
+                    }
+                }
+            }
+        }
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){

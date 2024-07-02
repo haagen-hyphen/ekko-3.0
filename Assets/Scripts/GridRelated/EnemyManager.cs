@@ -57,7 +57,7 @@ public class EnemyManager : MonoBehaviour
     public GridManager gridManager; 
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
-    public List<Enemy> enemies;
+    public List<Enemy> enemies = new();
     public GameObject spear;
     
     void Awake(){
