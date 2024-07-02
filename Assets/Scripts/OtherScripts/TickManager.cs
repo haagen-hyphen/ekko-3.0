@@ -15,7 +15,7 @@ public class GameState
     public List<Button> buttons;
     public List<Enemy> enemies;
 
-    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, Dictionary<Vector3Int, Cell> currLayer4, List<Button> currButtons)
+    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, Dictionary<Vector3Int, Cell> currLayer4)
     {
         playerPosition = playerCurrPos;
         layer1 = new Dictionary<Vector3Int, Cell>(currLayer1);
