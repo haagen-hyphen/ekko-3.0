@@ -11,15 +11,17 @@ public class GameState
     public Dictionary<Vector3Int, Cell> layer1;
     public Dictionary<Vector3Int, Cell> layer2;
     public Dictionary<Vector3Int, Cell> layer3;
+    public Dictionary<Vector3Int, Cell> layer4;
     public List<Button> buttons;
     public List<Enemy> enemies;
 
-    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3)
+    public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, Dictionary<Vector3Int, Cell> currLayer4, List<Button> currButtons)
     {
         playerPosition = playerCurrPos;
         layer1 = new Dictionary<Vector3Int, Cell>(currLayer1);
         layer2 = new Dictionary<Vector3Int, Cell>(currLayer2);
         layer3 = new Dictionary<Vector3Int, Cell>(currLayer3);
+        layer4 = new Dictionary<Vector3Int, Cell>(currLayer4);
     }
 
     public void SetEnemies(List<Enemy> newEnemies){
@@ -113,6 +115,7 @@ public class TickManager : MonoBehaviour
         gridManager.DictToTilemap(1, state.layer1);
         gridManager.DictToTilemap(2, state.layer2);
         gridManager.DictToTilemap(3, state.layer3);
+        gridManager.DictToTilemap(4, state.layer4);
         gridManager.SetButtons(state.buttons);
         enemyManager.SetEnemies(state.enemies);
     }

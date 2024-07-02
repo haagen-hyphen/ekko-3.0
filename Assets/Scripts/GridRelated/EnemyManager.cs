@@ -58,7 +58,6 @@ public class EnemyManager : MonoBehaviour
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
     public List<Enemy> enemies = new();
-    public GameObject spear;
     
     void Awake(){
         foreach (Slime slime in slimes)
@@ -73,6 +72,11 @@ public class EnemyManager : MonoBehaviour
         foreach(Enemy enemy in enemies){
             enemy.SetEnemyTypeData();
         }
+    }
+    public void AnythingToBeDoneWheneverTicks(int tickPassed)
+    {
+        MoveAllSlime();
+        AllCheckShoot();
     }
 
     #region Get Set
@@ -139,46 +143,36 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public bool isShooting = false;
     private void AllCheckShoot(){
         foreach (var spearGoblin in spearGoblins){
-            if(!isShooting){
-                if( gridManager.playerPosition.x == spearGoblin.position.x && math.abs(gridManager.playerPosition.y - spearGoblin.position.y)<=spearGoblin.shootingRange){
-                    Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).y);
-                    StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
-                }
-                else if(gridManager.playerPosition.y == spearGoblin.position.y && math.abs(gridManager.playerPosition.x - spearGoblin.position.x)<=spearGoblin.shootingRange){
-                    Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).x);
-                    StartCoroutine(PrepareAndShoot(spearGoblin.position, 5, unitDirection));
-                }
+            if( gridManager.playerPosition.x == spearGoblin.position.x && math.abs(gridManager.playerPosition.y - spearGoblin.position.y)<=spearGoblin.shootingRange){
+                Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).y);
+                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
+            }
+            else if(gridManager.playerPosition.y == spearGoblin.position.y && math.abs(gridManager.playerPosition.x - spearGoblin.position.x)<=spearGoblin.shootingRange){
+                Vector3Int unitDirection = (gridManager.playerPosition - spearGoblin.position)/math.abs((gridManager.playerPosition - spearGoblin.position).x);
+                StartCoroutine(PrepareAndShoot(spearGoblin.position, spearGoblin.shootingRange, unitDirection));
             }
         }
     }
 
     IEnumerator PrepareAndShoot(Vector3Int from, int shootingRange, Vector3Int unitDirection){
-        isShooting = true;
         //put "!" beside goblin
         //no need to wait for 1 tick here because tickmng calls player after enemy, enemy alr lag 1 tick
-        GameObject x = Instantiate(spear);
-        for(int i = 1; i <= shootingRange; i++){
-            gridManager.SetCell(3, from + i*unitDirection, gridManager.DeadlyEmpty);
-        }
-        for(int i = 1; i <= shootingRange; i++){
-            x.transform.position = from + i*unitDirection;
+        yield return null;
+
+        gridManager.SetCell(4, from + 1*unitDirection, gridManager.spear);
+        yield return new WaitForSeconds(0.5f/shootingRange);
+        for(int i = 2; i <= shootingRange; i++){
+            gridManager.SetCell(4, from + (i-1)*unitDirection, null);
+            gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
             yield return new WaitForSeconds(0.5f/shootingRange);
         }
-        Destroy(x);
-        for(int i = 1; i <= shootingRange; i++){
-            gridManager.SetCell(3, from + i*unitDirection, null);
-        }
-        isShooting = false;
+        gridManager.SetCell(4, from + shootingRange*unitDirection, null);
+        //a minor bug: when one coroutine setnull but another coroutine setspear at the same cell
     }
 
-    public void AnythingToBeDoneWheneverTicks(int tickPassed)
-    {
-        MoveAllSlime();
-        AllCheckShoot();
-    }
+
     
     private static int Heuristic((int r, int c) a, (int r, int c) b)
     {

@@ -4,28 +4,22 @@ using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
 using Unity.Collections;
 using Unity.VisualScripting;
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public TickManager tickManager;
-    #region Timeline-Related Variables
-        public RectTransform axisTransform;
-        float t = 0f;
-    #endregion
-    #region Ability-Related Variables
-        public RectTransform abilitySlot;
-        public Sprite[] abilityImages;
-    #endregion
-    
-    // Start is called before the first frame update
+    public RectTransform axisTransform;
+    float t = 0f;
+    public RectTransform abilitySlot;
+    public Sprite hand;
+
     void Start()
     {
-        SetAbilityImage(0);
+        SetAbilityImage(hand);
     }
-
-    // Update is called once per frame
 
     void Update()
     {
@@ -46,8 +40,11 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void SetAbilityImage(int imageIndex){
-        abilitySlot.GetComponent<UnityEngine.UI.Image>().sprite = abilityImages[imageIndex];
+    public void SetAbilityImage(Cell killedBy){
+        abilitySlot.GetComponent<UnityEngine.UI.Image>().sprite = killedBy.abilityImage;
+    }
+    public void SetAbilityImage(Sprite image){
+        abilitySlot.GetComponent<UnityEngine.UI.Image>().sprite = image;
     }
 
     public void RunTimeline(){
