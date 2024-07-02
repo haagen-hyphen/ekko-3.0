@@ -38,3 +38,4 @@ MonoBehaviour:
   isPushable: 0
   isTimeImmune: 0
   abilityImage: {fileID: 21300000, guid: d0c7edc6aece2284bb87e153cbe61f96, type: 3}
+  abilityName: Spear

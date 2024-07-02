@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d4192bb49bf3804b9a8a8719f8fe2cc, type: 3}
+  m_Script: {fileID: 11500000, guid: 364df142afac4354b9b64cbcfb118980, type: 3}
   m_Name: 3Box
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 06d49cf7b9b7e184a9770181b6b4792d, type: 3}
@@ -35,5 +35,7 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   isWalkable: 0
+  isPushable: 1
   isTimeImmune: 0
   abilityImage: {fileID: 0}
+  abilityName: 

@@ -387,6 +387,16 @@ public class GridManager : MonoBehaviour
         }
         
     }
+    public bool CheckIfPushable(Vector3Int position){
+        if(!CheckIfLayer3HasObject(position)){
+            return false;
+        }
+        else{
+            Cell cell = GetCell(3, position);
+            return cell.isPushable;
+        }
+        
+    }
 
     public void MoveCell(int layer, Vector3Int from, Vector3Int to){
         Cell cell = GetCell(layer, from);

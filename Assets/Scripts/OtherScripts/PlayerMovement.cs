@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public GridManager gridManager;
     public UIManager uIManager;
     public bool isDead = false;
+    public string currentAbility = "Hand";
     
     // Start is called before the first frame update
     void Awake(){
@@ -32,10 +33,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Fire1")){
-           Debug.Log(MousePositionToCellPosition()); 
-           EnemyManager.Instance.HandleGoblin(gridManager.playerPosition,5,new Vector3Int(1,0,0));
-        }
         StoreMoveBuffer();
     }
 
@@ -105,11 +102,10 @@ public class PlayerMovement : MonoBehaviour
                 transform.position += moveBuffer;
             }
             //got box see if can push box(es)
-            else if(gridManager.IsOfType<Box>(cell3)){
-                Box box = (Box)cell3;
+            else if(cell3.isPushable){
                 //can push so push
-                if(box.CheckPushability(aimedDestination+moveBuffer,moveBuffer)){
-                    box.PushBoxes(aimedDestination,moveBuffer);
+                if(cell3.CheckNotBlocked(aimedDestination+moveBuffer,moveBuffer) && canPushThings){
+                    cell3.PushBoxes(aimedDestination,moveBuffer);
                     transform.position += moveBuffer;
                 }
                 //can't push don't walk
@@ -127,21 +123,51 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //2 ways to die: CheckDeath every tick, and, setTile(4,) at playerPosition
     public void Die(Cell killedBy){
         moveBuffer = Vector3Int.zero;
         uIManager.SetAbilityImage(killedBy);
-
-        //GetAbility
+        currentAbility = killedBy.abilityName;
+        SetAbilityToNone();
+        SetAbility(currentAbility);
         tickManager.HandleDeath();
     }
 
-    public Vector3Int MousePositionToCellPosition(){
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
-        Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
-        return cellPosition;
+    public void SetAbilityToNone(){
+        //revert hand
+            canPushThings = false;
+            //make key not interactable?
+        //revert spear
+            //set bool canShoot = false
+        //revert slime
+            //make slimy wall not walkable
         
     }
+    bool canPushThings = true;
+    bool canShoot = false;
+    public void SetAbility(string currentAbility){
+        switch(currentAbility){
+            case "Hand":
+                canPushThings = true;
+                //make key interactable
+                break;
+            case "Spear":
+                //set bool can Shoot = true
+                break;
+            case "Slime":
+                //make slimy wall walkable
+                break;
+        }
+    }
+
+    //below is the mouse-related trajectory thingy
+    // if(Input.GetButtonDown("Fire1"))
+    // public Vector3Int MousePositionToCellPosition(){
+    //     Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //     Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
+    //     Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
+    //     return cellPosition;   
+    //}
     
     
 
