@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.VisualScripting;
+using UnityEditor.Tilemaps;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -19,6 +20,9 @@ public class PlayerMovement : MonoBehaviour
     public bool isDead = false;
     public string currentAbility = "Hand";
     public GameObject trajectory;
+    public int shootingRange;
+    public Vector3Int shootBuffer;
+    Vector3[] startAndEndPoints = new Vector3[2];
     
     // Start is called before the first frame update
     void Awake(){
@@ -33,18 +37,18 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Fire1") && canShoot){
-            Shoot();
-        }
         StoreMoveBuffer(false);
+        AimAndStoreShootBuffer();
+        CancelAimIfNeeded();
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
         CheckDeath();
         StoreMoveBuffer(true);
         MoveAndClearMoveBuffer();
+        ShootAndClearShootBuffer();
     }
-
+    #region walking
     void StoreMoveBuffer(bool onTickCall){
         if (!onTickCall)
         {
@@ -120,28 +124,52 @@ public class PlayerMovement : MonoBehaviour
         moveBuffer = Vector3Int.zero;
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
-    void HandleTrajectory(){
+    #endregion
+    #region shooting spear
 
-    }
-    Vector3Int StoreShootBuffer(){
-        if(Input.GetButtonUp("Fire1")){
-            Vector3Int mousePosition = MousePositionToCellPosition();
-            Vector3Int difference = mousePosition - gridManager.playerPosition;
+    public void AimAndStoreShootBuffer(){
+        LineRenderer trajectory = GetComponentInChildren<LineRenderer>(true);
+        if(Input.GetButton("Fire1") && canShoot){
+            trajectory.enabled = true;
+            Vector3Int difference = MousePositionToCellPosition() - gridManager.playerPosition;
+            if(difference != Vector3Int.zero){
+                if(Mathf.Abs(difference.x) > Mathf.Abs(difference.y)){
+                startAndEndPoints[1] = new Vector3Int(shootingRange*difference.x/Mathf.Abs(difference.x),0,0);
+                }
+                else{
+                startAndEndPoints[1] = new Vector3Int (0,shootingRange*difference.y/Mathf.Abs(difference.y),0);
+                }
+            }
+            trajectory.SetPositions(startAndEndPoints);
         }
-        
-        return Vector3Int.zero;
+        else{
+            trajectory.enabled = false;
+        }
+        if(Input.GetButtonUp("Fire1") && canShoot){
+            shootBuffer = new Vector3Int ((int)startAndEndPoints[1].x, (int)startAndEndPoints[1].y,0);
+        }
     }
-
+    void CancelAimIfNeeded(){
+        if(Input.GetButton("Fire2")){
+            LineRenderer trajectory = GetComponentInChildren<LineRenderer>(true);
+            shootBuffer = Vector3Int.zero;
+            trajectory.enabled = false;
+        }
+    }
+    void ShootAndClearShootBuffer(){
+        if(shootBuffer != Vector3Int.zero){
+            EnemyManager.Instance.HandleGoblin(gridManager.playerPosition, shootingRange, shootBuffer/shootingRange);
+        }
+        shootBuffer = Vector3Int.zero;
+    }
     public Vector3Int MousePositionToCellPosition(){
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
         Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
         return cellPosition;   
     }
+    #endregion
 
-    void Shoot(){
-        EnemyManager.Instance.HandleGoblin(gridManager.playerPosition, 5, new Vector3Int(1,0,0));
-    }
 
     #region Death & Ability
     void CheckDeath(){
@@ -170,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
     }
     bool canPushThings = true;
     bool canPassSlimyWall;
-    bool canShoot = false;
+    bool canShoot;
     public void SetAbility(string currentAbility){
         switch(currentAbility){
             case "Hand":
