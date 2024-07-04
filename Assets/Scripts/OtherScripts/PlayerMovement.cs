@@ -11,8 +11,6 @@ using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private float lastMoveTimeStamp;
-    public float gracePeriod;
     public TickManager tickManager;
     private Vector3Int moveBuffer;
     private float secondPerTick;
@@ -38,37 +36,37 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetButtonDown("Fire1") && canShoot){
             Shoot();
         }
-        StoreMoveBuffer();
+        StoreMoveBuffer(false);
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
         CheckDeath();
-        lastMoveTimeStamp = Time.time;
+        StoreMoveBuffer(true);
         MoveAndClearMoveBuffer();
     }
 
-    void StoreMoveBuffer(){
-        if (Time.time - lastMoveTimeStamp > secondPerTick - gracePeriod)
+    void StoreMoveBuffer(bool onTickCall){
+        if (!onTickCall)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
             {
-
-                if (Input.GetKeyDown(KeyCode.W))
-                {
-                    moveBuffer = new Vector3Int(0, 1, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.S))
-                {
-                    moveBuffer = new Vector3Int(0, -1, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.A))
-                {
-                    moveBuffer = new Vector3Int(-1, 0, 0);
-                }
-                else if (Input.GetKeyDown(KeyCode.D))
-                {
-                    moveBuffer = new Vector3Int(1, 0, 0);
-                }
+                moveBuffer = new Vector3Int(0, 1, 0);
             }
-        else{
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                moveBuffer = new Vector3Int(0, -1, 0);
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                moveBuffer = new Vector3Int(-1, 0, 0);
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                moveBuffer = new Vector3Int(1, 0, 0);
+            }
+        }
+        else
+        {
             if (Input.GetKey(KeyCode.W))
             {
                 moveBuffer = new Vector3Int(0, 1, 0);
@@ -85,12 +83,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 moveBuffer = new Vector3Int(1, 0, 0);
             }
-            else
-            {
-                moveBuffer = Vector3Int.zero;
-            }
         }
-    
     }
     void MoveAndClearMoveBuffer(){
         Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
