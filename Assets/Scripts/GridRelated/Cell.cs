@@ -12,6 +12,7 @@ public class Cell : Tile
     public bool isTimeImmune;
     public Sprite abilityImage;
     public string abilityName;
+    public bool isSlimyWall;
 
     public bool CheckNotBlocked(Vector3Int targetPosition, Vector3Int unitDirection){
         var cell3 = GridManager.Instance.GetCell(3, targetPosition);

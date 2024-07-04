@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEditor.UI;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     public UIManager uIManager;
     public bool isDead = false;
     public string currentAbility = "Hand";
+    public GameObject trajectory;
     
     // Start is called before the first frame update
     void Awake(){
@@ -33,6 +35,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetButtonDown("Fire1") && canShoot){
+            Shoot();
+        }
         StoreMoveBuffer();
     }
 
@@ -92,7 +97,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3Int aimedDestination = currentPositionInt + moveBuffer;
         //can't walk don't walk
         if(!gridManager.CheckIfWalkable(aimedDestination)){
-            moveBuffer = Vector3Int.zero;
+            if(gridManager.GetCell(1,aimedDestination).isSlimyWall && canPassSlimyWall){
+                transform.position += moveBuffer;
+            }
+            else{
+                moveBuffer = Vector3Int.zero;
+            }
         }
         //can walk see if got box
         else{
@@ -117,6 +127,30 @@ public class PlayerMovement : MonoBehaviour
         moveBuffer = Vector3Int.zero;
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
+    void HandleTrajectory(){
+
+    }
+    Vector3Int StoreShootBuffer(){
+        if(Input.GetButtonUp("Fire1")){
+            Vector3Int mousePosition = MousePositionToCellPosition();
+            Vector3Int difference = mousePosition - gridManager.playerPosition;
+        }
+        
+        return Vector3Int.zero;
+    }
+
+    public Vector3Int MousePositionToCellPosition(){
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
+        Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
+        return cellPosition;   
+    }
+
+    void Shoot(){
+        EnemyManager.Instance.HandleGoblin(gridManager.playerPosition, 5, new Vector3Int(1,0,0));
+    }
+
+    #region Death & Ability
     void CheckDeath(){
         if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
             Die(gridManager.GetCell(4,gridManager.playerPosition));
@@ -135,39 +169,32 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetAbilityToNone(){
         //revert hand
-            canPushThings = false;
-            //make key not interactable?
-        //revert spear
-            //set bool canShoot = false
+        canPushThings = false;
         //revert slime
-            //make slimy wall not walkable
-        
+        canPassSlimyWall = false;
+        //revert spear
+        canShoot = false;
     }
     bool canPushThings = true;
+    bool canPassSlimyWall;
     bool canShoot = false;
     public void SetAbility(string currentAbility){
         switch(currentAbility){
             case "Hand":
                 canPushThings = true;
-                //make key interactable
                 break;
             case "Spear":
-                //set bool can Shoot = true
+                canShoot = true;
                 break;
             case "Slime":
-                //make slimy wall walkable
+                canPassSlimyWall = true;
                 break;
         }
     }
+    #endregion
 
-    //below is the mouse-related trajectory thingy
-    // if(Input.GetButtonDown("Fire1"))
-    // public Vector3Int MousePositionToCellPosition(){
-    //     Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    //     Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
-    //     Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
-    //     return cellPosition;   
-    //}
+
+    
     
     
 

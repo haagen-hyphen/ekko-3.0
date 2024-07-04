@@ -51,6 +51,7 @@ public class Slime : Enemy
             if (slimeMoveBuffer != Vector3Int.zero)
             {
                 GridManager.Instance.MoveCell(3, position, position + slimeMoveBuffer);
+                GridManager.Instance.MoveCell(4, position, position + slimeMoveBuffer);
                 position += slimeMoveBuffer;
                 tickSinceLastMove = 0;
             }
@@ -105,6 +106,7 @@ public class EnemyManager : MonoBehaviour
         
         foreach (Slime slime in slimes)
         {
+            gridManager.SetCell(4, slime.position, gridManager.slimeDeadly);
             enemies.Add(slime.Clone());
         }
 

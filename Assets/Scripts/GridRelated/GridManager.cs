@@ -35,7 +35,7 @@ public class GridManager : MonoBehaviour
 {
     #region Variables
     public static GridManager Instance { get; private set; }
-    public Cell wall, floor, spear, trapEmpty;
+    public Cell wall, floor, spear, trapDeadly, slimeDeadly;
     public PlayerMovement playerMovement;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
@@ -69,7 +69,7 @@ public class GridManager : MonoBehaviour
         timeImmuneObjects = new Dictionary<Vector3Int, Cell>[] {layer1TimeImmune, layer2TimeImmune, layer3TimeImmune, layer4TimeImmune};
 
         foreach(var trap in traps){
-            SetCell(4, trap.position, trapEmpty);
+            SetCell(4, trap.position, trapDeadly);
         }        
         
         for (int i = layer1.cellBounds.min.x; i < layer1.cellBounds.max.x; i++)
