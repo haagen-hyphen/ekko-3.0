@@ -43,8 +43,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
-        CheckDeath();
         StoreMoveBuffer(true);
+        CheckDeath();
         MoveAndClearMoveBuffer();
         ShootAndClearShootBuffer();
     }

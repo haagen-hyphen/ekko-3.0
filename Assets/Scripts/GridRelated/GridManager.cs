@@ -139,11 +139,7 @@ public class GridManager : MonoBehaviour
     }
 
     #region Get Set
-    
-    public bool IsOfType<T>(object obj)
-    {
-        return obj is T;
-    }
+
     public Cell GetCell(int layer, Vector3Int position){
         return layer switch
         {

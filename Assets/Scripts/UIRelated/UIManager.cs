@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     float t = 0f;
     public RectTransform abilitySlot;
     public Sprite hand;
+    public Camera mainCamera;
 
     void Start()
     {
@@ -54,5 +55,13 @@ public class UIManager : MonoBehaviour
         }
         float x = Mathf.Lerp(0,-50,t);
         axisTransform.anchoredPosition = new Vector3(x,0,0);
+    }
+
+    public IEnumerator moveCamera(Vector3 towardsDirection, float inHowmanySeconds){
+        int animationFluency = 100;
+        for(int i=0; i<animationFluency; i++){
+            mainCamera.transform.Translate(towardsDirection/animationFluency);
+            yield return new WaitForSeconds(inHowmanySeconds/animationFluency);
+        }
     }
 }

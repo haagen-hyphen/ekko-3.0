@@ -66,7 +66,6 @@ public class SpearGoblin : Enemy
         shootingRange = 5;
         ranged = true;
         movable = false;
-        Debug.Log("Initialized");
     }
 
     public override void OnTick()
@@ -148,7 +147,6 @@ public class EnemyManager : MonoBehaviour
             {
                 rowString += grid[i, j] + " ";
             }
-            Debug.Log(rowString); // Output each row as a separate log entry
         }
     }
     
@@ -186,19 +184,25 @@ public class EnemyManager : MonoBehaviour
     }
 
     IEnumerator PrepareAndShoot(Vector3Int from, int shootingRange, Vector3Int unitDirection){
-        //put "!" beside goblin
-        //no need to wait for 1 tick here because tickmng calls player after enemy, enemy alr lag 1 tick
-        yield return null;
-
+        //no need to wait here because tickmng calls player after enemy, enemy alr lag 1 tick
+        //+2 so the coroutine can be done in 0.5 sec, anyways the duration itself is not important
+        yield return new WaitForSeconds(0.5f/(shootingRange+2));
+        if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection)){
+            gridManager.SetCell(3, from + 1*unitDirection, null);
+            yield break;
+        }
         gridManager.SetCell(4, from + 1*unitDirection, gridManager.spear);
-        yield return new WaitForSeconds(0.5f/shootingRange);
+        yield return new WaitForSeconds(0.5f/(shootingRange+2));
         for(int i = 2; i <= shootingRange; i++){
             gridManager.SetCell(4, from + (i-1)*unitDirection, null);
+            if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection)){
+                gridManager.SetCell(3, from + i*unitDirection, null);
+                yield break;
+            }
             gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
-            yield return new WaitForSeconds(0.5f/shootingRange);
+            yield return new WaitForSeconds(0.5f/(shootingRange+2));
         }
         gridManager.SetCell(4, from + shootingRange*unitDirection, null);
-        //a minor bug: when one coroutine setnull but another coroutine setspear at the same cell
     }
 
 
