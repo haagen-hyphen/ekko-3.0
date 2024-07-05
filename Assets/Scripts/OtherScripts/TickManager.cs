@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -43,6 +44,7 @@ public class TickManager : MonoBehaviour
     public PlayerMovement playerMovement;
     public GridManager gridManager;
     public EnemyManager enemyManager;
+    public UIManager uIManager;
 
     // Start is called before the first frame update
     void Start()
@@ -53,9 +55,11 @@ public class TickManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Time.time/secondPerTick > tickPassed){
+        if(!uIManager.isGamePaused){
+            if(Time.time/secondPerTick > tickPassed){
             tickPassed += 1;
             CallEveryOtherAction();
+            }
         }
     }
     void CallEveryOtherAction(){
@@ -86,6 +90,9 @@ public class TickManager : MonoBehaviour
 
         // Wait for 2 seconds in real-time
         yield return new WaitForSecondsRealtime(2f);
+        while(uIManager.isGamePaused){
+            yield return null;
+        }
 
         // Resume time
         Time.timeScale = 1f;

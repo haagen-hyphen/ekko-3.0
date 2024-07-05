@@ -16,6 +16,8 @@ public class UIManager : MonoBehaviour
     public RectTransform abilitySlot;
     public Sprite hand;
     public Camera mainCamera;
+    public bool isGamePaused; //to be put at every script's update
+    public AudioSource audioSource; 
 
     void Start()
     {
@@ -25,19 +27,26 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         RunTimeline();
-        if(Input.GetKeyDown(KeyCode.Escape)){
+        if(Input.GetKeyDown(KeyCode.Escape) && !isGamePaused){
             PauseGame();
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape) && isGamePaused){
+            ResumeGame();
         }
     }
 
     void PauseGame()
     {
         Time.timeScale = 0;
+        isGamePaused = true;
+        audioSource.enabled = false;
         gameObject.transform.GetChild(1).gameObject.SetActive(true);
     }
     public void ResumeGame()
     {
         gameObject.transform.GetChild(1).gameObject.SetActive(false);
+        audioSource.enabled = true;
+        isGamePaused = false;
         Time.timeScale = 1;
     }
 

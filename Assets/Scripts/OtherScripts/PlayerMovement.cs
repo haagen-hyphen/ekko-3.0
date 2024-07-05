@@ -37,9 +37,11 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        StoreMoveBuffer(false);
-        AimAndStoreShootBuffer();
-        CancelAimIfNeeded();
+        if(!uIManager.isGamePaused){
+            StoreMoveBuffer(false);
+            AimAndStoreShootBuffer();
+            CancelAimIfNeeded();
+        }
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){

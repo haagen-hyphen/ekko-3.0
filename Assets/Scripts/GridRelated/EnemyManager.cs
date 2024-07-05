@@ -114,7 +114,6 @@ public class EnemyManager : MonoBehaviour
             enemies.Add(spearGoblin.Clone());
         }
         foreach(Enemy enemy in enemies){
-            print(enemy);
             enemy.SetEnemyTypeData();
         }
     }
