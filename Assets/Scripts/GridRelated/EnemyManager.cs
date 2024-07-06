@@ -23,7 +23,7 @@ public class Enemy
     public int shootingRange;
     public virtual void SetEnemyTypeData(){
     }
-    
+
     public virtual void OnTick(){
 
     }
@@ -88,21 +88,21 @@ public class SpearGoblin : Enemy
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance;
-    public GridManager gridManager; 
+    public GridManager gridManager;
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
     public List<Enemy> enemies = new();
-    
+
     void Awake(){
-        if (Instance != null && Instance != this) 
-        { 
-            Destroy(this); 
-        } 
-        else 
-        { 
-            Instance = this; 
-        } 
-        
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+
         foreach (Slime slime in slimes)
         {
             gridManager.SetCell(4, slime.position, gridManager.slimeDeadly);
@@ -148,7 +148,7 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
-    
+
     public Vector3Int GetEnemyMove(Enemy enemy)
     {
         if (
@@ -162,10 +162,10 @@ public class EnemyManager : MonoBehaviour
             (int, int) startingPosition = (enemy.searchRadius, enemy.searchRadius);
             (int, int) endingPosition = ( enemy.searchRadius - (gridManager.playerPosition - enemy.position )[1] , enemy.searchRadius + (gridManager.playerPosition - enemy.position )[0]);
             List<(int r, int c)> thePath = AStarSearch2d(startingPosition, endingPosition, localGrid);
-            
+
             if (thePath.Count == 0) return Vector3Int.zero;
             return new Vector3Int( thePath[0].c - enemy.searchRadius , -(thePath[0].r - enemy.searchRadius),0);
-            
+
         }
 
         return Vector3Int.zero;
@@ -174,7 +174,7 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (var slime in slimes)
         {
-            
+
         }
     }
 
@@ -199,18 +199,23 @@ public class EnemyManager : MonoBehaviour
                 yield break;
             }
             gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
+            //if spear hit player
+            if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
+            gridManager.SetCell(4, from + i*unitDirection, null);
+            yield break;
+            }
             yield return new WaitForSeconds(0.5f/(shootingRange+2));
         }
         gridManager.SetCell(4, from + shootingRange*unitDirection, null);
     }
 
 
-    
+
     private static int Heuristic((int r, int c) a, (int r, int c) b)
     {
         return Math.Abs(a.r- b.r) + Math.Abs(a.c - b.c);
     }
-    
+
     private List<(int r, int c)> AStarSearch2d((int r,int c) startingPosition, (int r,int c) endingPosition, int[,] originalGrid)
     {
         var rows = originalGrid.GetLength(0);
@@ -218,25 +223,25 @@ public class EnemyManager : MonoBehaviour
         int[,] grid = new int[rows, cols];
 
         Array.Copy(originalGrid, grid, originalGrid.Length);
-        
+
         List<((int r ,int c) position, int heuristicScore, List<(int, int)> path)> node2Visit = new List<((int r, int c), int, List<(int r, int c)>)>();
         node2Visit.Add((startingPosition, Heuristic(startingPosition, endingPosition), new List<(int r, int c)>()));
-        
+
         grid[startingPosition.r,startingPosition.c] = -1;
         while (node2Visit.Count > 0)
         {
             var node = node2Visit.OrderBy(node => node.heuristicScore).First();
-            
+
             // if we reach the ending position return the path
             if (node.position.r == endingPosition.r && node.position.c == endingPosition.c)
             {
 
                 return node.path;
             }
-            
+
             var currentRow = node.position.r;
             var currentCol = node.position.c;
-        
+
             node2Visit.Remove(node);
 
             if (currentRow + 1 < rows)
