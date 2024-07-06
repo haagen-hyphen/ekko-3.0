@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 using System.Security.Cryptography;
 using Unity.Collections;
 using Unity.Burst.Intrinsics;
+using UnityEngine.UI;
 
 #region Declare Enemy
 public class Enemy
@@ -170,13 +171,6 @@ public class EnemyManager : MonoBehaviour
 
         return Vector3Int.zero;
     }
-    private void MoveAllSlime()
-    {
-        foreach (var slime in slimes)
-        {
-
-        }
-    }
 
     public void HandleGoblin(Vector3Int from, int shootingRange, Vector3Int unitDirection){
         StartCoroutine(PrepareAndShoot(from, shootingRange, unitDirection));
@@ -203,7 +197,6 @@ public class EnemyManager : MonoBehaviour
         }
         gridManager.SetCell(4, from + shootingRange*unitDirection, null);
     }
-
 
 
     private static int Heuristic((int r, int c) a, (int r, int c) b)
