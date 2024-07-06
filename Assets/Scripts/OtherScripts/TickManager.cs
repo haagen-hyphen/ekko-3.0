@@ -57,22 +57,20 @@ public class TickManager : MonoBehaviour
     {
         if(!uIManager.isGamePaused){
             if(Time.time/secondPerTick > tickPassed){
-            tickPassed += 1;
-            CallEveryOtherAction();
+                tickPassed += 1;
+                StoreGameState();
+                CallEveryOtherAction();
             }
         }
     }
-    void CallEveryOtherAction(){
-        if (playerMovement.isDead)
-        {
-            HandleDeath();
-        }
 
+    void StoreGameState(){
         GameState currState = gridManager.GetGameState();
         currState.SetEnemies(enemyManager.enemies);
         currState.SetButtons(gridManager.buttons);
         gameStates.Add(currState);
-
+    }
+    void CallEveryOtherAction(){
         enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
         playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
         gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
@@ -110,9 +108,6 @@ public class TickManager : MonoBehaviour
             GridManager.Instance.RevertGameState(previousState);
             gameStates = new();
         }
-
-        // Clear the death status
-        playerMovement.isDead = false;
     }
 
     void RevertToGameState(GameState state)

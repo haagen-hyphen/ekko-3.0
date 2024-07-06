@@ -128,10 +128,12 @@ public class PlayerMovement : MonoBehaviour
     }
     #endregion
     #region shooting spear
-
+    bool intendedToShoot = false;
     public void AimAndStoreShootBuffer(){
+        
         LineRenderer trajectory = GetComponentInChildren<LineRenderer>(true);
         if(Input.GetButton("Fire1") && canShoot){
+            intendedToShoot = true;
             trajectory.enabled = true;
             Vector3Int difference = MousePositionToCellPosition() - gridManager.playerPosition;
             if(difference != Vector3Int.zero){
@@ -144,11 +146,10 @@ public class PlayerMovement : MonoBehaviour
             }
             trajectory.SetPositions(startAndEndPoints);
         }
-        else{
+        if(Input.GetButtonUp("Fire1") && canShoot && intendedToShoot){
             trajectory.enabled = false;
-        }
-        if(Input.GetButtonUp("Fire1") && canShoot){
             shootBuffer = new Vector3Int ((int)startAndEndPoints[1].x, (int)startAndEndPoints[1].y,0);
+            intendedToShoot = false;
         }
     }
     void CancelAimIfNeeded(){
