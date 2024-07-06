@@ -23,12 +23,12 @@ public class PlayerMovement : MonoBehaviour
     public int shootingRange;
     public Vector3Int shootBuffer;
     Vector3[] startAndEndPoints = new Vector3[2];
-    
+
     // Start is called before the first frame update
     void Awake(){
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
-    
+
     void Start()
     {
         secondPerTick = tickManager.secondPerTick;
@@ -168,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
         Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
-        return cellPosition;   
+        return cellPosition;
     }
     #endregion
 
@@ -187,6 +187,7 @@ public class PlayerMovement : MonoBehaviour
         currentAbility = killedBy.abilityName;
         SetAbilityToNone();
         SetAbility(currentAbility);
+        EnemyManager.Instance.StopAllCoroutines(); //fix the bug where the spear keeps moving after player death
         tickManager.HandleDeath();
     }
 
@@ -217,9 +218,9 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
 
-    
-    
-    
+
+
+
 
 
 }

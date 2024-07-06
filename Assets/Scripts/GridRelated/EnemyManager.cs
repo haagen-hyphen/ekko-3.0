@@ -199,11 +199,6 @@ public class EnemyManager : MonoBehaviour
                 yield break;
             }
             gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
-            //if spear hit player
-            if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
-            gridManager.SetCell(4, from + i*unitDirection, null);
-            yield break;
-            }
             yield return new WaitForSeconds(0.5f/(shootingRange+2));
         }
         gridManager.SetCell(4, from + shootingRange*unitDirection, null);
