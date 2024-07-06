@@ -153,15 +153,31 @@ public class GridManager : MonoBehaviour
     public void SetCell(int layer, Vector3Int position, Cell cell){
         switch(layer){
             case 1:
-                layer1.SetTile(position, cell);break;
+                layer1.SetTile(position, cell);
+                if(!cell.isWalkable){
+                    layer2.SetTile(position, null);
+                    layer3.SetTile(position, null);
+                    layer4.SetTile(position, null);
+                }
+                break;
             case 2:
-                layer2.SetTile(position, cell);break;
+                if(GetCell(1,position).isWalkable){
+                    layer2.SetTile(position, cell);
+                }
+                break;
             case 3:
-                layer3.SetTile(position, cell);break;
+                if(GetCell(1,position).isWalkable){
+                    layer3.SetTile(position, cell);
+                }
+                break;
             case 4:
-                layer4.SetTile(position, cell);
-                if(position == playerPosition && cell != null){
-                    playerMovement.Die(cell);
+                if(CheckIfLayer1HasObject(position)){
+                    if(GetCell(1,position).isWalkable){
+                        layer4.SetTile(position, cell);
+                        if(position == playerPosition && cell != null){
+                            playerMovement.Die(cell);
+                        }
+                    }
                 }
                 break;
         }
