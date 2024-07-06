@@ -150,6 +150,13 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    public void KillAnEnemy(Vector3Int position){ 
+        //in some sense, you can also use this function to "kill" a box, this is a stronger function 
+        gridManager.SetCell(3,position,null);   //to kill an enemy's layer3 visually
+        gridManager.SetCell(4,position,null);   //to kill an enemy's layer4 deadly
+        RemoveEnemyByPosition(position);        //to kill an enemy's soul, i.e. remove it from the list
+    }
+
     public Vector3Int GetEnemyMove(Enemy enemy)
     {
         if (
@@ -181,7 +188,7 @@ public class EnemyManager : MonoBehaviour
         //+2 so the coroutine can be done in 0.5 sec, anyways the duration itself is not important
         yield return new WaitForSeconds(0.5f/(shootingRange+2));
         if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection)){
-            gridManager.SetCell(3, from + 1*unitDirection, null);
+            KillAnEnemy(from + 1*unitDirection);
             yield break;
         }
         gridManager.SetCell(4, from + 1*unitDirection, gridManager.spear);
@@ -189,7 +196,7 @@ public class EnemyManager : MonoBehaviour
         for(int i = 2; i <= shootingRange; i++){
             gridManager.SetCell(4, from + (i-1)*unitDirection, null);
             if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection)){
-                gridManager.SetCell(3, from + i*unitDirection, null);
+                KillAnEnemy(from + i*unitDirection);
                 yield break;
             }
             gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
@@ -282,6 +289,14 @@ public class EnemyManager : MonoBehaviour
             }
         }
         return new List<(int r, int c)>();
+    }
+    public void RemoveEnemyByPosition(Vector3Int position)
+    {
+        var enemyToRemove = enemies.FirstOrDefault(e => e.position.Equals(position));
+        if (enemyToRemove != null)
+        {
+            enemies.Remove(enemyToRemove);
+        }
     }
 }
 
