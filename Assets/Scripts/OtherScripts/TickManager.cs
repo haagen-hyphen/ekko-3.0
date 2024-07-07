@@ -25,7 +25,8 @@ public class GameState
     }
 
     public void SetEnemies(List<Enemy> newEnemies){
-        enemies = newEnemies.Select(item => item.Clone()).ToList();
+        enemies = newEnemies.Where(enemy => enemy.isTimeImmune == false).Select(item => item.Clone()).ToList();
+        //enemies = newEnemies.Select(item => item.Clone()).ToList();
     }
 
     public void SetButtons(List<Button> newButtons){
@@ -47,7 +48,7 @@ public class TickManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
