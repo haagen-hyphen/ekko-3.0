@@ -35,7 +35,7 @@ public class GridManager : MonoBehaviour
 {
     #region Variables
     public static GridManager Instance { get; private set; }
-    public Cell wall, floor, spear, trapDeadly, slimeDeadly;
+    public Cell wall, floor, spear, trapDeadly, slimeDeadly, slimyWall, slime;
     public PlayerMovement playerMovement;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
@@ -154,29 +154,43 @@ public class GridManager : MonoBehaviour
         switch(layer){
             case 1:
                 layer1.SetTile(position, cell);
-                if(!cell.isWalkable){
+                break;
+            case 2:
+                layer2.SetTile(position, cell);
+                break;
+            case 3:
+                layer3.SetTile(position, cell);
+                break;
+            case 4:
+                layer4.SetTile(position, cell);
+                break;
+        }
+    }
+    public void AdvancedSetCell(int layer, Vector3Int position, Cell cell){
+        switch(layer){
+            case 1:
+                layer1.SetTile(position, cell);
+                if(!CheckIfWalkable(position)){
                     layer2.SetTile(position, null);
                     layer3.SetTile(position, null);
                     layer4.SetTile(position, null);
                 }
                 break;
             case 2:
-                if(GetCell(1,position).isWalkable){
+                if(CheckIfWalkable(position)){
                     layer2.SetTile(position, cell);
                 }
                 break;
             case 3:
-                if(GetCell(1,position).isWalkable){
+                if(CheckIfWalkable(position)){
                     layer3.SetTile(position, cell);
                 }
                 break;
             case 4:
-                if(CheckIfLayer1HasObject(position)){
-                    if(GetCell(1,position).isWalkable){
-                        layer4.SetTile(position, cell);
-                        if(position == playerPosition && cell != null){
-                            playerMovement.Die(cell);
-                        }
+                if(CheckIfWalkable(position)){
+                    layer4.SetTile(position, cell);
+                    if(position == playerPosition && cell != null){
+                        playerMovement.Die(cell);
                     }
                 }
                 break;

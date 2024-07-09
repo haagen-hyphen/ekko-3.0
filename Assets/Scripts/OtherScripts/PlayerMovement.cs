@@ -190,6 +190,11 @@ public class PlayerMovement : MonoBehaviour
         SetAbility(currentAbility);
         EnemyManager.Instance.StopAllCoroutines(); //fix the bug where the spear keeps moving after player death
         tickManager.HandleDeath();
+        try{
+            Boss.Instance.RevertTime();
+        }
+        catch{}
+        
     }
 
     public void SetAbilityToNone(){

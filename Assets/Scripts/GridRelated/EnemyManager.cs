@@ -36,6 +36,15 @@ public class Enemy
 [Serializable]
 public class Slime : Enemy
 {
+    public Slime(Vector3Int position){
+        this.position = position;
+        movable = true;
+        ranged = false;
+        tickPerMove = 2;
+        searchRadius = 3;
+        GridManager.Instance.SetCell(3,position,GridManager.Instance.slime);
+        GridManager.Instance.SetCell(4,position,GridManager.Instance.slimeDeadly);
+    }
     public override void SetEnemyTypeData(){
         movable = true;
         ranged = false;
@@ -187,22 +196,22 @@ public class EnemyManager : MonoBehaviour
         //no need to wait here because tickmng calls player after enemy, enemy alr lag 1 tick
         //+2 so the coroutine can be done in 0.5 sec, anyways the duration itself is not important
         yield return new WaitForSeconds(0.5f/(shootingRange+2));
-        if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection)){
+        if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection) || !gridManager.CheckIfWalkable(from + 1*unitDirection)){
             KillAnEnemy(from + 1*unitDirection);
             yield break;
         }
-        gridManager.SetCell(4, from + 1*unitDirection, gridManager.spear);
+        gridManager.AdvancedSetCell(4, from + 1*unitDirection, gridManager.spear);
         yield return new WaitForSeconds(0.5f/(shootingRange+2));
         for(int i = 2; i <= shootingRange; i++){
-            gridManager.SetCell(4, from + (i-1)*unitDirection, null);
-            if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection)){
+            gridManager.AdvancedSetCell(4, from + (i-1)*unitDirection, null);
+            if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection) || !gridManager.CheckIfWalkable(from + i*unitDirection)){
                 KillAnEnemy(from + i*unitDirection);
                 yield break;
             }
-            gridManager.SetCell(4, from + i*unitDirection, gridManager.spear);
+            gridManager.AdvancedSetCell(4, from + i*unitDirection, gridManager.spear);
             yield return new WaitForSeconds(0.5f/(shootingRange+2));
         }
-        gridManager.SetCell(4, from + shootingRange*unitDirection, null);
+        gridManager.AdvancedSetCell(4, from + shootingRange*unitDirection, null);
     }
 
 
