@@ -23,9 +23,18 @@ public class PlayerMovement : MonoBehaviour
     public int shootingRange;
     public Vector3Int shootBuffer;
     Vector3[] startAndEndPoints = new Vector3[2];
+    public static PlayerMovement Instance;
 
     // Start is called before the first frame update
     void Awake(){
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
 
@@ -161,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void ShootAndClearShootBuffer(){
         if(shootBuffer != Vector3Int.zero){
-            EnemyManager.Instance.HandleGoblin(gridManager.playerPosition, shootingRange, shootBuffer/shootingRange);
+            CallShootSpear(gridManager.playerPosition, shootingRange, shootBuffer/shootingRange);
         }
         shootBuffer = Vector3Int.zero;
     }
@@ -170,6 +179,31 @@ public class PlayerMovement : MonoBehaviour
         Vector3 cellPositionFloat = gridManager.GetLayer(1).WorldToCell(worldPosition);
         Vector3Int cellPosition = new Vector3Int((int)cellPositionFloat.x,(int)cellPositionFloat.y,0);
         return cellPosition;
+    }
+
+    public void CallShootSpear(Vector3Int from, int shootingRange, Vector3Int unitDirection){
+        StartCoroutine(ShootSpear(from, shootingRange, unitDirection));
+    }
+    public IEnumerator ShootSpear(Vector3Int from, int shootingRange, Vector3Int unitDirection){
+        //no need to wait here because tickmng calls player after enemy, enemy alr lag 1 tick
+        //+2 so the coroutine can be done in 0.5 sec, anyways the duration itself is not important
+        yield return new WaitForSeconds(0.5f/(shootingRange+2));
+        if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection) || !gridManager.CheckIfWalkable(from + 1*unitDirection)){
+            EnemyManager.Instance.KillAnEnemy(from + 1*unitDirection);
+            yield break;
+        }
+        gridManager.AdvancedSetCell(4, from + 1*unitDirection, gridManager.spear);
+        yield return new WaitForSeconds(0.5f/(shootingRange+2));
+        for(int i = 2; i <= shootingRange; i++){
+            gridManager.AdvancedSetCell(4, from + (i-1)*unitDirection, null);
+            if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection) || !gridManager.CheckIfWalkable(from + i*unitDirection)){
+                EnemyManager.Instance.KillAnEnemy(from + i*unitDirection);
+                yield break;
+            }
+            gridManager.AdvancedSetCell(4, from + i*unitDirection, gridManager.spear);
+            yield return new WaitForSeconds(0.5f/(shootingRange+2));
+        }
+        gridManager.AdvancedSetCell(4, from + shootingRange*unitDirection, null);
     }
     #endregion
 
@@ -221,6 +255,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
+
     #endregion
 
 

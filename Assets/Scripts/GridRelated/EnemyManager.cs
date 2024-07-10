@@ -32,6 +32,43 @@ public class Enemy
     public Enemy Clone(){
         return (Enemy)MemberwiseClone();
     }
+    public virtual Vector3Int GetEnemyMove(Enemy enemy)
+    {
+        if (
+            math.abs((GridManager.Instance.playerPosition - enemy.position)[0]) <= enemy.searchRadius &&
+            math.abs((GridManager.Instance.playerPosition - enemy.position)[1]) <= enemy.searchRadius
+        )
+        {
+
+            int[,] localGrid = GetLocalGrid(enemy.position, enemy.searchRadius);
+
+            (int, int) startingPosition = (enemy.searchRadius, enemy.searchRadius);
+            (int, int) endingPosition = ( enemy.searchRadius - (GridManager.Instance.playerPosition - enemy.position )[1] , enemy.searchRadius + (GridManager.Instance.playerPosition - enemy.position )[0]);
+            List<(int r, int c)> thePath = EnemyManager.Instance.AStarSearch2d(startingPosition, endingPosition, localGrid);
+
+            if (thePath.Count == 0) return Vector3Int.zero;
+            return new Vector3Int( thePath[0].c - enemy.searchRadius , -(thePath[0].r - enemy.searchRadius),0);
+
+        }
+
+        return Vector3Int.zero;
+    }
+    public virtual int[,] GetLocalGrid(Vector3Int centerPosition, int radius)
+    {
+        int[,] localGrid = new int[radius * 2 + 1, radius * 2 + 1];
+        for (int r = 0; r < radius * 2 + 1; r++)
+        {
+            for (int c = 0; c < radius * 2 + 1; c++)
+            {
+                Vector3Int aimedDestination = centerPosition + new Vector3Int(c - radius, - (r - radius), 0);
+                if(!GridManager.Instance.CheckIfWalkable(aimedDestination) || GridManager.Instance.CheckIfLayer3HasObject(aimedDestination))
+                {
+                    localGrid[r, c] = 1;
+                }
+            }
+        }
+        return localGrid;
+    }
 }
 [Serializable]
 public class Slime : Enemy
@@ -57,7 +94,7 @@ public class Slime : Enemy
         tickSinceLastMove += 1;
         if (tickSinceLastMove >= tickPerMove)
         {
-            Vector3Int slimeMoveBuffer = EnemyManager.Instance.GetEnemyMove(this);
+            Vector3Int slimeMoveBuffer = GetEnemyMove(this);
             if (slimeMoveBuffer != Vector3Int.zero)
             {
                 GridManager.Instance.MoveCell(3, position, position + slimeMoveBuffer);
@@ -66,6 +103,22 @@ public class Slime : Enemy
                 tickSinceLastMove = 0;
             }
         }
+    }
+    public override int[,] GetLocalGrid(Vector3Int centerPosition, int radius)
+    {
+        int[,] localGrid = new int[radius * 2 + 1, radius * 2 + 1];
+        for (int r = 0; r < radius * 2 + 1; r++)
+        {
+            for (int c = 0; c < radius * 2 + 1; c++)
+            {
+                Vector3Int aimedDestination = centerPosition + new Vector3Int(c - radius, - (r - radius), 0);
+                if((!GridManager.Instance.CheckIfWalkable(aimedDestination)&&!GridManager.Instance.CheckIfIsSlimyWall(aimedDestination)) || GridManager.Instance.CheckIfLayer3HasObject(aimedDestination))
+                {
+                    localGrid[r, c] = 1;
+                }
+            }
+        }
+        return localGrid;
     }
 }
 [Serializable]
@@ -83,11 +136,11 @@ public class SpearGoblin : Enemy
         GridManager gridManager = GridManager.Instance;
         if( gridManager.playerPosition.x == position.x && math.abs(gridManager.playerPosition.y - position.y)<=shootingRange){
             Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).y);
-            EnemyManager.Instance.HandleGoblin(position, shootingRange, unitDirection);
+            PlayerMovement.Instance.CallShootSpear(position, shootingRange, unitDirection);
         }
         else if(gridManager.playerPosition.y == position.y && math.abs(gridManager.playerPosition.x - position.x)<=shootingRange){
             Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).x);
-            EnemyManager.Instance.HandleGoblin(position, shootingRange, unitDirection);
+            PlayerMovement.Instance.CallShootSpear(position, shootingRange, unitDirection);
         }
     }
 }
@@ -166,53 +219,9 @@ public class EnemyManager : MonoBehaviour
         RemoveEnemyByPosition(position);        //to kill an enemy's soul, i.e. remove it from the list
     }
 
-    public Vector3Int GetEnemyMove(Enemy enemy)
-    {
-        if (
-            math.abs((gridManager.playerPosition - enemy.position)[0]) <= enemy.searchRadius &&
-            math.abs((gridManager.playerPosition - enemy.position)[1]) <= enemy.searchRadius
-        )
-        {
+    
 
-            int[,] localGrid = gridManager.GetLocalGrid(enemy.position, enemy.searchRadius);
-
-            (int, int) startingPosition = (enemy.searchRadius, enemy.searchRadius);
-            (int, int) endingPosition = ( enemy.searchRadius - (gridManager.playerPosition - enemy.position )[1] , enemy.searchRadius + (gridManager.playerPosition - enemy.position )[0]);
-            List<(int r, int c)> thePath = AStarSearch2d(startingPosition, endingPosition, localGrid);
-
-            if (thePath.Count == 0) return Vector3Int.zero;
-            return new Vector3Int( thePath[0].c - enemy.searchRadius , -(thePath[0].r - enemy.searchRadius),0);
-
-        }
-
-        return Vector3Int.zero;
-    }
-
-    public void HandleGoblin(Vector3Int from, int shootingRange, Vector3Int unitDirection){
-        StartCoroutine(PrepareAndShoot(from, shootingRange, unitDirection));
-    }
-
-    IEnumerator PrepareAndShoot(Vector3Int from, int shootingRange, Vector3Int unitDirection){
-        //no need to wait here because tickmng calls player after enemy, enemy alr lag 1 tick
-        //+2 so the coroutine can be done in 0.5 sec, anyways the duration itself is not important
-        yield return new WaitForSeconds(0.5f/(shootingRange+2));
-        if(gridManager.CheckIfLayer3HasObject(from + 1*unitDirection) || !gridManager.CheckIfWalkable(from + 1*unitDirection)){
-            KillAnEnemy(from + 1*unitDirection);
-            yield break;
-        }
-        gridManager.AdvancedSetCell(4, from + 1*unitDirection, gridManager.spear);
-        yield return new WaitForSeconds(0.5f/(shootingRange+2));
-        for(int i = 2; i <= shootingRange; i++){
-            gridManager.AdvancedSetCell(4, from + (i-1)*unitDirection, null);
-            if(gridManager.CheckIfLayer3HasObject(from + i*unitDirection) || !gridManager.CheckIfWalkable(from + i*unitDirection)){
-                KillAnEnemy(from + i*unitDirection);
-                yield break;
-            }
-            gridManager.AdvancedSetCell(4, from + i*unitDirection, gridManager.spear);
-            yield return new WaitForSeconds(0.5f/(shootingRange+2));
-        }
-        gridManager.AdvancedSetCell(4, from + shootingRange*unitDirection, null);
-    }
+    
 
 
     private static int Heuristic((int r, int c) a, (int r, int c) b)
@@ -220,7 +229,7 @@ public class EnemyManager : MonoBehaviour
         return Math.Abs(a.r- b.r) + Math.Abs(a.c - b.c);
     }
 
-    private List<(int r, int c)> AStarSearch2d((int r,int c) startingPosition, (int r,int c) endingPosition, int[,] originalGrid)
+    public List<(int r, int c)> AStarSearch2d((int r,int c) startingPosition, (int r,int c) endingPosition, int[,] originalGrid)
     {
         var rows = originalGrid.GetLength(0);
         var cols = originalGrid.GetLength(1);

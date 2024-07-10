@@ -423,7 +423,16 @@ public class GridManager : MonoBehaviour
         }
         
     }
-
+    public bool CheckIfIsSlimyWall(Vector3Int position){
+        if(!CheckIfLayer1HasObject(position)){
+            return false;
+        }
+        else{
+            Cell cell = GetCell(1, position);
+            return cell.isSlimyWall;
+        }
+        
+    }
     public void MoveCell(int layer, Vector3Int from, Vector3Int to){
         Cell cell = GetCell(layer, from);
         if (timeImmuneObjects[layer-1].ContainsKey(from))
@@ -465,22 +474,5 @@ public class GridManager : MonoBehaviour
             SetCell(1,position, cell1);
         }
         
-    }
-
-    public int[,] GetLocalGrid(Vector3Int centerPosition, int radius)
-    {
-        int[,] localGrid = new int[radius * 2 + 1, radius * 2 + 1];
-        for (int r = 0; r < radius * 2 + 1; r++)
-        {
-            for (int c = 0; c < radius * 2 + 1; c++)
-            {
-                Vector3Int aimedDestination = centerPosition + new Vector3Int(c - radius, - (r - radius), 0);
-                if(!CheckIfWalkable(aimedDestination) || CheckIfLayer3HasObject(aimedDestination))
-                {
-                    localGrid[r, c] = 1;
-                }
-            }
-        }
-        return localGrid;
     }
 }
