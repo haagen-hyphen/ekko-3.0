@@ -32,22 +32,22 @@ public class Enemy
     public Enemy Clone(){
         return (Enemy)MemberwiseClone();
     }
-    public virtual Vector3Int GetEnemyMove(Enemy enemy)
+    public virtual Vector3Int GetEnemyMove()
     {
         if (
-            math.abs((GridManager.Instance.playerPosition - enemy.position)[0]) <= enemy.searchRadius &&
-            math.abs((GridManager.Instance.playerPosition - enemy.position)[1]) <= enemy.searchRadius
+            math.abs((GridManager.Instance.playerPosition - position)[0]) <= searchRadius &&
+            math.abs((GridManager.Instance.playerPosition - position)[1]) <= searchRadius
         )
         {
 
-            int[,] localGrid = GetLocalGrid(enemy.position, enemy.searchRadius);
+            int[,] localGrid = GetLocalGrid(position, searchRadius);
 
-            (int, int) startingPosition = (enemy.searchRadius, enemy.searchRadius);
-            (int, int) endingPosition = ( enemy.searchRadius - (GridManager.Instance.playerPosition - enemy.position )[1] , enemy.searchRadius + (GridManager.Instance.playerPosition - enemy.position )[0]);
+            (int, int) startingPosition = (searchRadius, searchRadius);
+            (int, int) endingPosition = (searchRadius - (GridManager.Instance.playerPosition - position )[1] , searchRadius + (GridManager.Instance.playerPosition - position )[0]);
             List<(int r, int c)> thePath = EnemyManager.Instance.AStarSearch2d(startingPosition, endingPosition, localGrid);
 
             if (thePath.Count == 0) return Vector3Int.zero;
-            return new Vector3Int( thePath[0].c - enemy.searchRadius , -(thePath[0].r - enemy.searchRadius),0);
+            return new Vector3Int( thePath[0].c - searchRadius , -(thePath[0].r - searchRadius),0);
 
         }
 
@@ -94,12 +94,12 @@ public class Slime : Enemy
         tickSinceLastMove += 1;
         if (tickSinceLastMove >= tickPerMove)
         {
-            Vector3Int slimeMoveBuffer = GetEnemyMove(this);
-            if (slimeMoveBuffer != Vector3Int.zero)
+            Vector3Int unitDirection = GetEnemyMove();
+            if (unitDirection != Vector3Int.zero)
             {
-                GridManager.Instance.MoveCell(3, position, position + slimeMoveBuffer);
-                GridManager.Instance.MoveCell(4, position, position + slimeMoveBuffer);
-                position += slimeMoveBuffer;
+                GridManager.Instance.MoveCell(3, position, position + unitDirection);
+                GridManager.Instance.MoveCell(4, position, position + unitDirection);
+                position += unitDirection;
                 tickSinceLastMove = 0;
             }
         }
@@ -133,15 +133,24 @@ public class SpearGoblin : Enemy
 
     public override void OnTick()
     {
-        GridManager gridManager = GridManager.Instance;
-        if( gridManager.playerPosition.x == position.x && math.abs(gridManager.playerPosition.y - position.y)<=shootingRange){
-            Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).y);
+        Vector3Int unitDirection = GetEnemyMove();
+            if (unitDirection != Vector3Int.zero){
             PlayerMovement.Instance.CallShootSpear(position, shootingRange, unitDirection);
         }
-        else if(gridManager.playerPosition.y == position.y && math.abs(gridManager.playerPosition.x - position.x)<=shootingRange){
-            Vector3Int unitDirection = (gridManager.playerPosition - position)/math.abs((gridManager.playerPosition - position).x);
-            PlayerMovement.Instance.CallShootSpear(position, shootingRange, unitDirection);
+    }
+    public override Vector3Int GetEnemyMove(){
+        Vector3Int minus = GridManager.Instance.playerPosition - position;
+        int multiplicationOfXY = minus.x * minus.y;
+        int theNoneZeroXY = minus.x + minus.y;
+        if(multiplicationOfXY == 0){
+            if(Mathf.Abs(theNoneZeroXY) <= shootingRange && Mathf.Abs(theNoneZeroXY)!=0){
+                Vector3Int unitDirection = minus/Mathf.Abs(theNoneZeroXY);
+                if(EnemyManager.Instance.CheckIfPathClear(unitDirection,Mathf.Abs(theNoneZeroXY),GetLocalGrid(position,shootingRange))){
+                    return unitDirection;
+                }
+            }
         }
+        return Vector3Int.zero;
     }
 }
 #endregion
@@ -196,7 +205,7 @@ public class EnemyManager : MonoBehaviour
 
     #endregion
 
-    void PrintGrid(int[,] grid)
+    public void PrintGrid(int[,] grid)
     {
         int rows = grid.GetLength(0); // Get number of rows
         int cols = grid.GetLength(1); // Get number of columns
@@ -307,6 +316,17 @@ public class EnemyManager : MonoBehaviour
             }
         }
         return new List<(int r, int c)>();
+    }
+    public bool CheckIfPathClear(Vector3Int unitDirection, int Range, int[,] localGrid){
+        int length = localGrid.GetLength(0);
+        bool check=true;
+        for(int i=1; i<=Range;i++){
+            if(localGrid[(length-1)/2 - i*unitDirection.y, (length-1)/2 + i*unitDirection.x] == 1){
+                //some array issue
+                check = false;
+            }
+        }
+        return check;
     }
     public void RemoveEnemyByPosition(Vector3Int position)
     {
