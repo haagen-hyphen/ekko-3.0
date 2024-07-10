@@ -213,6 +213,9 @@ public class PlayerMovement : MonoBehaviour
         if(gridManager.CheckIfLayer4HasObject(gridManager.playerPosition)){
             Die(gridManager.GetCell(4,gridManager.playerPosition));
         }
+        else if(gridManager.CheckIfIsSlimyWall(gridManager.playerPosition) && !canPassSlimyWall){
+            Die(gridManager.slimeDeadly);
+        }
     }
 
     //2 ways to die: CheckDeath every tick, and, setTile(4,) at playerPosition

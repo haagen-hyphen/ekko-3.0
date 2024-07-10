@@ -200,16 +200,16 @@ public class EnemyManager : MonoBehaviour
     {
         int rows = grid.GetLength(0); // Get number of rows
         int cols = grid.GetLength(1); // Get number of columns
-
-        // Iterate through each element and log its value
+        string toPrint = "";
         for (int i = 0; i < rows; i++)
         {
-            string rowString = "";
             for (int j = 0; j < cols; j++)
             {
-                rowString += grid[i, j] + " ";
+                toPrint += grid[i, j] + " ";
             }
+            toPrint += "\n";
         }
+        Debug.Log(toPrint);
     }
 
     public void KillAnEnemy(Vector3Int position){ 
