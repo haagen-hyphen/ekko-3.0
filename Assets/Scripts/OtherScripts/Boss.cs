@@ -15,6 +15,8 @@ public class Boss : MonoBehaviour
     public bool jumping;
     public float tickMyself;
     public static Boss Instance { get; private set; }
+    public SpriteRenderer self;
+    public SpriteRenderer shadow;
     // Start is called before the first frame update
     
     void Awake(){
@@ -25,10 +27,7 @@ public class Boss : MonoBehaviour
         else 
         { 
             Instance = this; 
-        } 
-    }
-    void Start()
-    {
+        }
         mode = 1;
         modeXPair[1]=-7;
         modeXPair[2]=-4;
@@ -54,6 +53,7 @@ public class Boss : MonoBehaviour
         if(!jumping && mode < 6){
             StartCoroutine(JumpTillLand());
             SpawnWalls(mode,DecideWhereToSpawnWalls());
+            //actually should land then spawn wall will feel better, currently the coroutine is weird
         }
         else if(mode == 6){
             SpawnSlimesRandomly(20);
@@ -74,12 +74,20 @@ public class Boss : MonoBehaviour
 
 #region jump
     IEnumerator JumpTillLand(){
-        jumping=true;
-        Jump();
         Vector3Int aimLandAt = DecideWhereToLand();
-        //apply visual effect of shadow
+        //jump
+        jumping=true;
+        SetCells(4, Vector3ToVector3Int(transform.position),null);
+        transform.position = aimLandAt;
+        shadow.enabled = true;
+        self.enabled = false;
+        
         yield return new WaitForSeconds(1.5f);
-        Land(aimLandAt);
+        //land
+        shadow.enabled = false;
+        self.enabled = true;
+        
+        SetCells(4, aimLandAt, slimeDeadly);
         jumping=false;
     }
 
@@ -98,14 +106,6 @@ public class Boss : MonoBehaviour
             playerPosition.x=6;
         }
         return new Vector3Int(playerPosition.x,playerPosition.y,0);
-    }
-    void Jump(){
-        SetCells(4, Vector3ToVector3Int(transform.position),null);
-        transform.Translate(0,0,-10);
-    }
-    void Land(Vector3Int toMid){
-        SetCells(4, toMid, slimeDeadly);
-        transform.position = toMid;
     }
     void SetCells(int layer, Vector3Int Mid, Cell toSet){
         for(int i=-1; i<=1;i++){
