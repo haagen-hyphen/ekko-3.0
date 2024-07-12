@@ -71,8 +71,8 @@ public class TickManager : MonoBehaviour
         gameStates.Add(currState);
     }
     void CallEveryOtherAction(){
-        enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
         playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
+        enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
         gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
     }
 

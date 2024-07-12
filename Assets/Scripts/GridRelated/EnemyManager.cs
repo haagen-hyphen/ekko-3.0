@@ -35,15 +35,15 @@ public class Enemy
     public virtual Vector3Int GetEnemyMove()
     {
         if (
-            math.abs((GridManager.Instance.playerPosition - position)[0]) <= searchRadius &&
-            math.abs((GridManager.Instance.playerPosition - position)[1]) <= searchRadius
+            math.abs((GridManager.Instance.playerLastPosition - position)[0]) <= searchRadius &&
+            math.abs((GridManager.Instance.playerLastPosition - position)[1]) <= searchRadius
         )
         {
 
             int[,] localGrid = GetLocalGrid(position, searchRadius);
 
             (int, int) startingPosition = (searchRadius, searchRadius);
-            (int, int) endingPosition = (searchRadius - (GridManager.Instance.playerPosition - position )[1] , searchRadius + (GridManager.Instance.playerPosition - position )[0]);
+            (int, int) endingPosition = (searchRadius - (GridManager.Instance.playerLastPosition - position )[1] , searchRadius + (GridManager.Instance.playerPosition - position )[0]);
             List<(int r, int c)> thePath = EnemyManager.Instance.AStarSearch2d(startingPosition, endingPosition, localGrid);
 
             if (thePath.Count == 0) return Vector3Int.zero;
@@ -233,10 +233,16 @@ public class EnemyManager : MonoBehaviour
     
 
 
-    private static int Heuristic((int r, int c) a, (int r, int c) b)
+    private static int HeuristicByMoveDistance((int r, int c) a, (int r, int c) b)
     {
         return Math.Abs(a.r- b.r) + Math.Abs(a.c - b.c);
     }
+    
+    private static int HeuristicByAbsDistance((int r, int c) a, (int r, int c) b)
+    {
+        return (int)(Mathf.Pow((a.r - b.r), 2) + Mathf.Pow((a.c - b.c), 2));
+    }
+
 
     public List<(int r, int c)> AStarSearch2d((int r,int c) startingPosition, (int r,int c) endingPosition, int[,] originalGrid)
     {
@@ -247,7 +253,7 @@ public class EnemyManager : MonoBehaviour
         Array.Copy(originalGrid, grid, originalGrid.Length);
 
         List<((int r ,int c) position, int heuristicScore, List<(int, int)> path)> node2Visit = new List<((int r, int c), int, List<(int r, int c)>)>();
-        node2Visit.Add((startingPosition, Heuristic(startingPosition, endingPosition), new List<(int r, int c)>()));
+        node2Visit.Add((startingPosition, HeuristicByAbsDistance(startingPosition, endingPosition), new List<(int r, int c)>()));
 
         grid[startingPosition.r,startingPosition.c] = -1;
         while (node2Visit.Count > 0)
@@ -274,7 +280,7 @@ public class EnemyManager : MonoBehaviour
                     newPosition.r += 1;
                     List<(int r, int c)> newPath = new List<(int r, int c)>(node.path);
                     newPath.Add(newPosition);
-                    node2Visit.Add((newPosition, Heuristic(newPosition, endingPosition) + newPath.Count, newPath));
+                    node2Visit.Add((newPosition, HeuristicByAbsDistance(newPosition, endingPosition) + newPath.Count, newPath));
                     grid[newPosition.r, newPosition.c] = -1;
                 }
             }
@@ -286,7 +292,7 @@ public class EnemyManager : MonoBehaviour
                     newPosition.r -= 1;
                     List<(int r, int c)> newPath = new List<(int r, int c)>(node.path);
                     newPath.Add(newPosition);
-                    node2Visit.Add((newPosition, Heuristic(newPosition, endingPosition) + newPath.Count, newPath));
+                    node2Visit.Add((newPosition, HeuristicByAbsDistance(newPosition, endingPosition) + newPath.Count, newPath));
                     grid[newPosition.r, newPosition.c] = -1;
                 }
             }
@@ -298,7 +304,7 @@ public class EnemyManager : MonoBehaviour
                     newPosition.c += 1;
                     List<(int r, int c)> newPath = new List<(int r, int c)>(node.path);
                     newPath.Add(newPosition);
-                    node2Visit.Add((newPosition, Heuristic(newPosition, endingPosition) + newPath.Count, newPath));
+                    node2Visit.Add((newPosition, HeuristicByAbsDistance(newPosition, endingPosition) + newPath.Count, newPath));
                     grid[newPosition.r, newPosition.c] = -1;
                 }
             }
@@ -310,7 +316,7 @@ public class EnemyManager : MonoBehaviour
                     newPosition.c -= 1;
                     List<(int r, int c)> newPath = new List<(int r, int c)>(node.path);
                     newPath.Add(newPosition);
-                    node2Visit.Add((newPosition, Heuristic(newPosition, endingPosition) + newPath.Count, newPath));
+                    node2Visit.Add((newPosition, HeuristicByAbsDistance(newPosition, endingPosition) + newPath.Count, newPath));
                     grid[newPosition.r, newPosition.c] = -1;
                 }
             }
