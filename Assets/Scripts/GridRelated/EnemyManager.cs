@@ -16,6 +16,7 @@ using Unity.Burst.Intrinsics;
 public class Enemy
 {
     public Vector3Int position;
+    public Cell cell;
     public int tickSinceLastMove;
     public int tickPerMove;
     public int searchRadius;
@@ -23,7 +24,8 @@ public class Enemy
     public bool ranged;
     public int shootingRange;
     public bool isTimeImmune;
-    public virtual void SetEnemyTypeData(){
+    public virtual void Init(){
+        cell = GridManager.Instance.GetCell(3, position);
     }
 
     public virtual void OnTick(){
@@ -37,7 +39,9 @@ public class Enemy
 [Serializable]
 public class Slime : Enemy
 {
-    public override void SetEnemyTypeData(){
+    public override void Init()
+    {
+        base.Init();
         movable = true;
         ranged = false;
         tickPerMove = 2;
@@ -62,12 +66,12 @@ public class Slime : Enemy
 [Serializable]
 public class SpearGoblin : Enemy
 {
-    public override void SetEnemyTypeData()
+    public override void Init()
     {
+        base.Init();
         shootingRange = 5;
         ranged = true;
         movable = false;
-        Debug.Log("Initialized");
     }
 
     public override void OnTick()
@@ -97,6 +101,7 @@ public class EnemyManager : MonoBehaviour
     public List<Enemy> timeImmuneEnemies = new();
 
     void Awake(){
+        // Instance
         if (Instance != null && Instance != this)
         {
             Destroy(this);
@@ -106,6 +111,8 @@ public class EnemyManager : MonoBehaviour
             Instance = this;
         }
 
+
+        // Init enemies
         foreach (Slime slime in slimes)
         {
             enemies.Add(slime.Clone());
@@ -116,7 +123,7 @@ public class EnemyManager : MonoBehaviour
             enemies.Add(spearGoblin.Clone());
         }
         foreach(Enemy enemy in enemies){
-            enemy.SetEnemyTypeData();
+            enemy.Init();
             if (enemy.isTimeImmune)
             {
                 timeImmuneEnemies.Add(enemy);
@@ -135,6 +142,20 @@ public class EnemyManager : MonoBehaviour
 
     public void SetEnemies(List<Enemy> newEnemies){
         enemies = newEnemies.Select(item => item.Clone()).ToList();
+    }
+
+    public void OnTimeReversal(List<Enemy> newEnemies)
+    {
+        SetEnemies(newEnemies);
+        enemies = enemies.Concat(timeImmuneEnemies).ToList();
+        
+        foreach (var enemy in timeImmuneEnemies)
+        {
+            if (gridManager.GetCell(3, enemy.position) == null)
+            {
+                gridManager.SetCell(3, enemy.position, enemy.cell);
+            }
+        }
     }
 
     #endregion

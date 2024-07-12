@@ -108,16 +108,4 @@ public class TickManager : MonoBehaviour
         // Clear the death status
         playerMovement.isDead = false;
     }
-
-    void RevertToGameState(GameState state)
-    {
-        gridManager.playerPosition = state.playerPosition;
-        playerMovement.transform.position = state.playerPosition;
-        gridManager.DictToTilemap(1, state.layer1);
-        gridManager.DictToTilemap(2, state.layer2);
-        gridManager.DictToTilemap(3, state.layer3);
-        gridManager.DictToTilemap(4, state.layer4);
-        gridManager.SetButtons(state.buttons);
-        enemyManager.SetEnemies(state.enemies);
-    }
 }

@@ -17,19 +17,14 @@ public class Button{
 
     public Button Clone()
     {
-        return (Button)MemberwiseClone();
+        return new Button
+        {
+            position = position,
+            doors = doors
+        };
     }
 }
 
-[System.Serializable]
-public class Trap{
-    public Vector3Int position;
-
-    public Trap Clone()
-    {
-        return (Trap)MemberwiseClone();
-    }
-}
 
 public class GridManager : MonoBehaviour
 {
@@ -51,7 +46,7 @@ public class GridManager : MonoBehaviour
     public Dictionary<Vector3Int, Cell>[] timeImmuneObjects = new Dictionary<Vector3Int, Cell>[4];
 
     public List<Button> buttons;
-    public List<Trap> traps;
+    public List<Vector3Int> trapPositions;
 
     #endregion
 
@@ -68,8 +63,8 @@ public class GridManager : MonoBehaviour
 
         timeImmuneObjects = new Dictionary<Vector3Int, Cell>[] {layer1TimeImmune, layer2TimeImmune, layer3TimeImmune, layer4TimeImmune};
 
-        foreach(var trap in traps){
-            SetCell(4, trap.position, trapEmpty);
+        foreach(var trapPos in trapPositions){
+            SetCell(4, trapPos, trapEmpty);
         }
 
         for (int i = layer1.cellBounds.min.x; i < layer1.cellBounds.max.x; i++)
@@ -290,7 +285,6 @@ public class GridManager : MonoBehaviour
     {
         if (layer == 1)
         {
-            layer1.ClearAllTiles();
             foreach(var item in dict)
             {
                 SetCell(1, item.Key, item.Value);
@@ -298,7 +292,6 @@ public class GridManager : MonoBehaviour
         }
         if (layer == 2)
         {
-            layer2.ClearAllTiles();
             foreach(var item in dict)
             {
                 SetCell(2, item.Key, item.Value);
@@ -306,7 +299,6 @@ public class GridManager : MonoBehaviour
         }
         if (layer == 3)
         {
-            layer3.ClearAllTiles();
             foreach(var item in dict)
             {
                 SetCell(3, item.Key, item.Value);
@@ -314,7 +306,6 @@ public class GridManager : MonoBehaviour
         }
         if (layer == 4)
         {
-            layer4.ClearAllTiles();
             foreach(var item in dict)
             {
                 SetCell(4, item.Key, item.Value);
@@ -323,13 +314,10 @@ public class GridManager : MonoBehaviour
     }
 
     public void RevertGameState(GameState state){
-        for (int i = 0; i < 4; i++)
-        {
-            foreach (var item in timeImmuneObjects[i])
-            {
-                SetCell(i+1, item.Key, item.Value);
-            }
-        }
+        layer1.ClearAllTiles();
+        layer2.ClearAllTiles();
+        layer3.ClearAllTiles();
+        layer4.ClearAllTiles();
         playerPosition = state.playerPosition;
         playerMovement.transform.position = state.playerPosition;
         DictToTilemap(1, state.layer1);
@@ -337,8 +325,20 @@ public class GridManager : MonoBehaviour
         DictToTilemap(3, state.layer3);
         DictToTilemap(4, state.layer4);
         SetButtons(state.buttons);
-        EnemyManager.Instance.SetEnemies(state.enemies.Concat(EnemyManager.Instance.timeImmuneEnemies).ToList());
 
+        EnemyManager.Instance.OnTimeReversal(state.enemies);
+
+        for (int i = 0; i < 4; i++)
+        {
+            foreach (var item in timeImmuneObjects[i])
+            {
+                if (GetCell(i+1, item.Key) == null)
+                {
+                    SetCell(i+1, item.Key, item.Value);
+                }
+            }
+        }
+        
     }
 
     #endregion
@@ -391,7 +391,6 @@ public class GridManager : MonoBehaviour
         Cell cell = GetCell(layer, from);
         if (timeImmuneObjects[layer-1].ContainsKey(from))
         {
-            Debug.Log("Hi");
             timeImmuneObjects[layer-1].Remove(from);
             timeImmuneObjects[layer-1][to] = cell;
         }
