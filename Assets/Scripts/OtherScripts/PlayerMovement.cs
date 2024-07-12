@@ -133,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         moveBuffer = Vector3Int.zero;
+        gridManager.playerLastPosition = gridManager.playerPosition;
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
     #endregion

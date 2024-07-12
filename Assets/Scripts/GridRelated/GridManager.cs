@@ -42,6 +42,8 @@ public class GridManager : MonoBehaviour
     [SerializeField]private Tilemap layer3;
     [SerializeField]private Tilemap layer4;
     [HideInInspector]public Vector3Int playerPosition;
+    [HideInInspector]public Vector3Int playerLastPosition;
+
 
     public Dictionary<Vector3Int, Cell> layer1TimeImmune = new();
     public Dictionary<Vector3Int, Cell> layer2TimeImmune = new();

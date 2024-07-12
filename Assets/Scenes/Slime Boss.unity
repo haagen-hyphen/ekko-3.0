@@ -895,6 +895,8 @@ MonoBehaviour:
   mode: 0
   jumping: 0
   tickMyself: 0
+  self: {fileID: 872505810}
+  shadow: {fileID: 635972602}
 --- !u!1 &994934799
 GameObject:
   m_ObjectHideFlags: 0
@@ -4343,6 +4345,7 @@ MonoBehaviour:
   layer3: {fileID: 1898031351}
   layer4: {fileID: 1119285162}
   playerPosition: {x: 0, y: 0, z: 0}
+  playerLastPosition: {x: 0, y: 0, z: 0}
   buttons:
   - position: {x: 9, y: -5, z: 0}
     doors:
