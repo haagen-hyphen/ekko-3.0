@@ -13,16 +13,20 @@ using Unity.Burst.Intrinsics;
 using UnityEngine.UI;
 
 #region Declare Enemy
+[Serializable]
 public class Enemy
 {
     public Vector3Int position;
+    public Cell cell;
     public int tickSinceLastMove;
     public int tickPerMove;
     public int searchRadius;
     public bool movable;
     public bool ranged;
     public int shootingRange;
-    public virtual void SetEnemyTypeData(){
+    public bool isTimeImmune;
+    public virtual void Init(){
+        cell = GridManager.Instance.GetCell(3, position);
     }
 
     public virtual void OnTick(){
@@ -82,7 +86,7 @@ public class Slime : Enemy
         GridManager.Instance.SetCell(3,position,GridManager.Instance.slime);
         GridManager.Instance.SetCell(4,position,GridManager.Instance.slimeDeadly);
     }
-    public override void SetEnemyTypeData(){
+    public override void Init(){
         movable = true;
         ranged = false;
         tickPerMove = 2;
@@ -124,8 +128,9 @@ public class Slime : Enemy
 [Serializable]
 public class SpearGoblin : Enemy
 {
-    public override void SetEnemyTypeData()
+    public override void Init()
     {
+        base.Init();
         shootingRange = 5;
         ranged = true;
         movable = false;
@@ -164,8 +169,10 @@ public class EnemyManager : MonoBehaviour
     public List<Slime> slimes;
     public List<SpearGoblin> spearGoblins;
     public List<Enemy> enemies = new();
+    public List<Enemy> timeImmuneEnemies = new();
 
     void Awake(){
+        // Instance
         if (Instance != null && Instance != this)
         {
             Destroy(this);
@@ -175,6 +182,8 @@ public class EnemyManager : MonoBehaviour
             Instance = this;
         }
 
+
+        // Init enemies
         foreach (Slime slime in slimes)
         {
             gridManager.SetCell(4, slime.position, gridManager.slimeDeadly);
@@ -186,7 +195,11 @@ public class EnemyManager : MonoBehaviour
             enemies.Add(spearGoblin.Clone());
         }
         foreach(Enemy enemy in enemies){
-            enemy.SetEnemyTypeData();
+            enemy.Init();
+            if (enemy.isTimeImmune)
+            {
+                timeImmuneEnemies.Add(enemy);
+            }
         }
     }
     public void AnythingToBeDoneWheneverTicks(int tickPassed)
@@ -201,6 +214,20 @@ public class EnemyManager : MonoBehaviour
 
     public void SetEnemies(List<Enemy> newEnemies){
         enemies = newEnemies.Select(item => item.Clone()).ToList();
+    }
+
+    public void OnTimeReversal(List<Enemy> newEnemies)
+    {
+        SetEnemies(newEnemies);
+        enemies = enemies.Concat(timeImmuneEnemies).ToList();
+        
+        foreach (var enemy in timeImmuneEnemies)
+        {
+            if (gridManager.GetCell(3, enemy.position) == null)
+            {
+                gridManager.SetCell(3, enemy.position, enemy.cell);
+            }
+        }
     }
 
     #endregion

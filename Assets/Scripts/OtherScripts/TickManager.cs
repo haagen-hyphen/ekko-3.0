@@ -26,7 +26,8 @@ public class GameState
     }
 
     public void SetEnemies(List<Enemy> newEnemies){
-        enemies = newEnemies.Select(item => item.Clone()).ToList();
+        enemies = newEnemies.Where(enemy => enemy.isTimeImmune == false).Select(item => item.Clone()).ToList();
+        //enemies = newEnemies.Select(item => item.Clone()).ToList();
     }
 
     public void SetButtons(List<Button> newButtons){
@@ -108,17 +109,5 @@ public class TickManager : MonoBehaviour
             GridManager.Instance.RevertGameState(previousState);
             gameStates = new();
         }
-    }
-
-    void RevertToGameState(GameState state)
-    {
-        gridManager.playerPosition = state.playerPosition;
-        playerMovement.transform.position = state.playerPosition;
-        gridManager.DictToTilemap(1, state.layer1);
-        gridManager.DictToTilemap(2, state.layer2);
-        gridManager.DictToTilemap(3, state.layer3);
-        gridManager.DictToTilemap(4, state.layer4);
-        gridManager.SetButtons(state.buttons);
-        enemyManager.SetEnemies(state.enemies);
     }
 }
