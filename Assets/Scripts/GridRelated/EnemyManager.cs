@@ -144,7 +144,7 @@ public class SpearGoblin : Enemy
         }
     }
     public override Vector3Int GetEnemyMove(){
-        Vector3Int minus = GridManager.Instance.playerPosition - position;
+        Vector3Int minus = GridManager.Instance.playerLastPosition - position;
         int multiplicationOfXY = minus.x * minus.y;
         int theNoneZeroXY = minus.x + minus.y;
         if(multiplicationOfXY == 0){
