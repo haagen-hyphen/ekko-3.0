@@ -107,8 +107,10 @@ public class PlayerMovement : MonoBehaviour
         if(!gridManager.CheckIfWalkable(aimedDestination)){
             if(gridManager.GetCell(1,aimedDestination).isSlimyWall && canPassSlimyWall){
                 transform.position += moveBuffer;
-            }
-            else{
+            }else if (gridManager.GetCell(1, aimedDestination).isWalkableByKeyPlayerHolding)
+            {
+                transform.position += moveBuffer;
+            }else{
                 moveBuffer = Vector3Int.zero;
             }
         }

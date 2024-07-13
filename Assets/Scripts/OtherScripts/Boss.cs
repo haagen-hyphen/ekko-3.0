@@ -53,15 +53,15 @@ public class Boss : MonoBehaviour
     public void OnTick(){
         tickMyself += 0.5f;
         modeOverTime.Add(mode);
-        if(!jumping && mode < 6){
-            StartCoroutine(JumpTillLand());
-            SpawnWalls(mode,DecideWhereToSpawnWalls());
-            //actually should land then spawn wall will feel better, currently the coroutine is weird
-        }
-        else if(mode == 6){
-            SpawnSlimesRandomly(20);
-            mode += 1;
-        }
+        //if(!jumping && mode < 6){
+        //    StartCoroutine(JumpTillLand());
+        //    SpawnWalls(mode,DecideWhereToSpawnWalls());
+        //    //actually should land then spawn wall will feel better, currently the coroutine is weird
+        //}
+        //else if(mode == 6){
+        //    SpawnSlimesRandomly(20);
+        //    mode += 1;
+        //}
     }
     public void RevertTime(){
         if(modeOverTime.Count >= 5){

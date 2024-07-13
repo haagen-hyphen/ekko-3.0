@@ -40,3 +40,4 @@ MonoBehaviour:
   abilityImage: {fileID: 0}
   abilityName: 
   isSlimyWall: 0
+  isWalkableByKeyPlayerHolding: 0

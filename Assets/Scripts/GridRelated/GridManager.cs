@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.UI;
 using UnityEngine;
@@ -20,6 +21,20 @@ public class Button{
         return (Button)MemberwiseClone();
     }
 }
+
+[System.Serializable]
+public class ColourKey{
+    public Vector3Int position;
+    public Cell keyCell;
+    public List<Vector3Int> doors;
+    public Cell doorCell;
+
+    [HideInInspector]
+    public bool pickProtect = false;
+    public bool holdByPlayer = false;
+
+}
+
 
 [System.Serializable]
 public class Trap{
@@ -53,6 +68,7 @@ public class GridManager : MonoBehaviour
     public Dictionary<Vector3Int, Cell>[] timeImmuneObjects = new Dictionary<Vector3Int, Cell>[4];
     
     public List<Button> buttons;
+    public List<ColourKey> colourKeys;
     public List<Trap> traps;
 
     #endregion
@@ -138,6 +154,8 @@ public class GridManager : MonoBehaviour
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
         CheckAndTriggerButtons();
+        CheckAndPickUpColourKeys();
+        CheckColourDoorUnlock();
     }
 
     #region Get Set
@@ -480,4 +498,80 @@ public class GridManager : MonoBehaviour
         }
         
     }
+    
+    
+    public void CheckAndPickUpColourKeys()
+    {
+
+        ColourKey keyPlayerHold  = null;
+        ColourKey keyPlayerHoldNext  = null;
+        foreach(var key in colourKeys){
+            if (key.holdByPlayer)
+            {
+                keyPlayerHold = key;
+                if (keyPlayerHold.pickProtect)
+                {
+                    if (keyPlayerHold.position != playerPosition) keyPlayerHold.pickProtect = false;
+                }
+                keyPlayerHold.position = playerPosition;
+            }
+            if (playerPosition == key.position&& key.holdByPlayer == false)
+            {
+
+                keyPlayerHoldNext = key;
+            }
+
+        }
+
+        if (keyPlayerHoldNext != null)
+        {
+            
+            if (keyPlayerHold != null)
+            {
+                if (keyPlayerHold.pickProtect) return;
+                
+                keyPlayerHold.holdByPlayer = false;
+                SetCell(2, playerPosition, keyPlayerHold.keyCell);
+
+            }
+            else
+            {
+                SetCell(2, playerPosition, null);
+            }
+
+            keyPlayerHoldNext.holdByPlayer = true;
+            keyPlayerHoldNext.pickProtect = true;
+            keyPlayerHold = keyPlayerHoldNext;
+            
+        }
+
+        foreach (var key in colourKeys)
+        {
+            key.doorCell.isWalkableByKeyPlayerHolding = false;
+        }
+
+        if (keyPlayerHold != null)
+        {
+            keyPlayerHold.doorCell.isWalkableByKeyPlayerHolding = true;
+        }
+    }
+    
+    public void CheckColourDoorUnlock()
+    {
+        foreach(var key in colourKeys){
+            foreach (var door in key.doors)
+            {
+                if (playerPosition == door)
+                {
+                    SetCell(1, door, floor);
+                    key.doors.Remove(door);
+                    return;
+                }
+            }
+
+        }
+
+    }
+    
 }
+
