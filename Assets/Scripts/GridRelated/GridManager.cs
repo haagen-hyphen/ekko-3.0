@@ -184,7 +184,7 @@ public class GridManager : MonoBehaviour
                 break;
         }
     }
-    
+
     public void AdvancedSetCell(int layer, Vector3Int position, Cell cell){
         switch(layer){
             case 1:
@@ -235,6 +235,18 @@ public class GridManager : MonoBehaviour
 
     public void SetButtons(List<Button> newButtons){
         buttons = newButtons.Select(item => item.Clone()).ToList();
+    }
+
+    public bool IsEnemyAtPosition(Vector3Int position)
+    {
+        foreach (var enemy in EnemyManager.Instance.enemies)
+        {
+            if (enemy.position == position)
+            {
+            return true;
+            }
+        }
+        return false;
     }
 
     #endregion
@@ -376,7 +388,7 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
-        
+
     }
 
     #endregion
@@ -428,7 +440,7 @@ public class GridManager : MonoBehaviour
             Cell cell = GetCell(3, position);
             return cell.isPushable;
         }
-        
+
     }
     public bool CheckIfIsSlimyWall(Vector3Int position){
         if(!CheckIfLayer1HasObject(position)){
@@ -438,7 +450,7 @@ public class GridManager : MonoBehaviour
             Cell cell = GetCell(1, position);
             return cell.isSlimyWall;
         }
-        
+
     }
     public void MoveCell(int layer, Vector3Int from, Vector3Int to){
         Cell cell = GetCell(layer, from);
@@ -482,8 +494,8 @@ public class GridManager : MonoBehaviour
         }
 
     }
-    
-    
+
+
     public void CheckAndPickUpColourKeys()
     {
 
@@ -509,11 +521,11 @@ public class GridManager : MonoBehaviour
 
         if (keyPlayerHoldNext != null)
         {
-            
+
             if (keyPlayerHold != null)
             {
                 if (keyPlayerHold.pickProtect) return;
-                
+
                 keyPlayerHold.holdByPlayer = false;
                 SetCell(2, playerPosition, keyPlayerHold.keyCell);
 
@@ -526,7 +538,7 @@ public class GridManager : MonoBehaviour
             keyPlayerHoldNext.holdByPlayer = true;
             keyPlayerHoldNext.pickProtect = true;
             keyPlayerHold = keyPlayerHoldNext;
-            
+
         }
 
         foreach (var key in colourKeys)
@@ -539,7 +551,7 @@ public class GridManager : MonoBehaviour
             keyPlayerHold.doorCell.isWalkableByKeyPlayerHolding = true;
         }
     }
-    
+
     public void CheckColourDoorUnlock()
     {
         foreach(var key in colourKeys){
@@ -556,6 +568,6 @@ public class GridManager : MonoBehaviour
         }
 
     }
-    
+
 }
 

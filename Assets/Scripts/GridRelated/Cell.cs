@@ -20,7 +20,7 @@ public class Cell : Tile
 
         if (GridManager.Instance.CheckIfPushable(targetPosition)){
             return cell3.CheckNotBlocked(targetPosition + unitDirection, unitDirection);
-             
+
         }
         else{
             return GridManager.Instance.CheckIfWalkable(targetPosition);
@@ -33,7 +33,7 @@ public class Cell : Tile
         if (GridManager.Instance.CheckIfPushable(firstBoxPosition+unitDirection)){
             cell3.PushBoxes(firstBoxPosition + unitDirection, unitDirection);
             GridManager.Instance.MoveCell(3,firstBoxPosition,firstBoxPosition + unitDirection);
-            
+
         }
         else{
             GridManager.Instance.MoveCell(3,firstBoxPosition,firstBoxPosition + unitDirection);
