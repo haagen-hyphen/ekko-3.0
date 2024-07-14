@@ -13,7 +13,6 @@ public class Button{
     public Vector3Int position;
     public List<Vector3Int> doors;
 
-    [HideInInspector]
     public bool triggeredLastTick = false;
 
     public Button Clone()
@@ -21,7 +20,8 @@ public class Button{
         return new Button
         {
             position = position,
-            doors = doors
+            doors = doors,
+            triggeredLastTick = triggeredLastTick
         };
     }
 }
