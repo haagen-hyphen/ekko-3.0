@@ -220,7 +220,7 @@ public class EnemyManager : MonoBehaviour
     {
         SetEnemies(newEnemies);
         enemies = enemies.Concat(timeImmuneEnemies).ToList();
-        
+
         foreach (var enemy in timeImmuneEnemies)
         {
             if (gridManager.GetCell(3, enemy.position) == null)
@@ -248,23 +248,23 @@ public class EnemyManager : MonoBehaviour
         Debug.Log(toPrint);
     }
 
-    public void KillAnEnemy(Vector3Int position){ 
-        //in some sense, you can also use this function to "kill" a box, this is a stronger function 
+    public void KillAnEnemy(Vector3Int position){
+        //in some sense, you can also use this function to "kill" a box, this is a stronger function
         gridManager.SetCell(3,position,null);   //to kill an enemy's layer3 visually
         gridManager.SetCell(4,position,null);   //to kill an enemy's layer4 deadly
         RemoveEnemyByPosition(position);        //to kill an enemy's soul, i.e. remove it from the list
     }
 
-    
 
-    
+
+
 
 
     private static int HeuristicByMoveDistance((int r, int c) a, (int r, int c) b)
     {
         return Math.Abs(a.r- b.r) + Math.Abs(a.c - b.c);
     }
-    
+
     private static int HeuristicByAbsDistance((int r, int c) a, (int r, int c) b)
     {
         return (int)(Mathf.Pow((a.r - b.r), 2) + Mathf.Pow((a.c - b.c), 2));
