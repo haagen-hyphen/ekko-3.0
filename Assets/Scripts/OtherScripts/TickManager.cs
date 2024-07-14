@@ -14,6 +14,7 @@ public class GameState
     public Dictionary<Vector3Int, Cell> layer3;
     public Dictionary<Vector3Int, Cell> layer4;
     public List<Button> buttons;
+    public List<ColourKey> colourKeys;
     public List<Enemy> enemies;
 
     public GameState(Vector3Int playerCurrPos, Dictionary<Vector3Int, Cell> currLayer1, Dictionary<Vector3Int, Cell> currLayer2, Dictionary<Vector3Int, Cell> currLayer3, Dictionary<Vector3Int, Cell> currLayer4)
@@ -26,12 +27,15 @@ public class GameState
     }
 
     public void SetEnemies(List<Enemy> newEnemies){
-        enemies = newEnemies.Where(enemy => enemy.isTimeImmune == false).Select(item => item.Clone()).ToList();
+        enemies = newEnemies.Where(enemy => enemy.timeImmune == false).Select(item => item.Clone()).ToList();
         //enemies = newEnemies.Select(item => item.Clone()).ToList();
     }
 
     public void SetButtons(List<Button> newButtons){
-        buttons = newButtons.Select(item => item.Clone()).ToList();
+        buttons = newButtons.Where(button => button.timeImmune == false).Select(item => item.Clone()).ToList();
+    }
+    public void SetColourKeys(List<ColourKey> newColourKeys){
+        colourKeys = newColourKeys.Where(colourKey => colourKey.timeImmune == false).Select(item => item.Clone()).ToList();
     }
 }
 

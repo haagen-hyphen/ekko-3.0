@@ -24,7 +24,7 @@ public class Enemy
     public bool movable;
     public bool ranged;
     public int shootingRange;
-    public bool isTimeImmune;
+    public bool timeImmune;
     public virtual void Init(){
         cell = GridManager.Instance.GetCell(3, position);
     }
@@ -196,7 +196,7 @@ public class EnemyManager : MonoBehaviour
         }
         foreach(Enemy enemy in enemies){
             enemy.Init();
-            if (enemy.isTimeImmune)
+            if (enemy.timeImmune)
             {
                 timeImmuneEnemies.Add(enemy);
             }

@@ -14,6 +14,7 @@ public class Button{
     public List<Vector3Int> doors;
 
     public bool triggeredLastTick = false;
+    public bool timeImmune;
 
     public Button Clone()
     {
@@ -21,7 +22,8 @@ public class Button{
         {
             position = position,
             doors = doors,
-            triggeredLastTick = triggeredLastTick
+            triggeredLastTick = triggeredLastTick,
+            timeImmune = timeImmune
         };
     }
 }
@@ -32,11 +34,25 @@ public class ColourKey{
     public Cell keyCell;
     public List<Vector3Int> doors;
     public Cell doorCell;
+    public bool timeImmune;
+
 
     [HideInInspector]
     public bool pickProtect = false;
     public bool holdByPlayer = false;
 
+    public ColourKey Clone(){
+        return new ColourKey
+        {
+            position = position,
+            keyCell = keyCell,
+            doors = doors,
+            doorCell = doorCell,
+            pickProtect = pickProtect,
+            holdByPlayer = holdByPlayer,
+            timeImmune = timeImmune
+        };
+    }
 }
 
 
@@ -62,8 +78,10 @@ public class GridManager : MonoBehaviour
 
     public Dictionary<Vector3Int, Cell>[] timeImmuneObjects = new Dictionary<Vector3Int, Cell>[4];
 
-    public List<Button> buttons;
-    public List<ColourKey> colourKeys;
+    public List<Button> buttons = new();
+    public List<Button> timeImmuneButtons = new();
+    public List<ColourKey> colourKeys = new();
+    public List<ColourKey> timeImmuneColourKeys = new();
     public List<Vector3Int> trapPositions;
 
     #endregion
@@ -143,6 +161,20 @@ public class GridManager : MonoBehaviour
                         layer4TimeImmune[pos] = cell;
                     }
                 }
+            }
+        }
+        foreach (var button in buttons)
+        {
+            if (button.timeImmune)
+            {
+                timeImmuneButtons.Add(button.Clone());
+            }
+        }
+        foreach (var colourKey in colourKeys)
+        {
+            if (colourKey.timeImmune)
+            {
+                timeImmuneColourKeys.Add(colourKey.Clone());
             }
         }
     }
@@ -235,6 +267,12 @@ public class GridManager : MonoBehaviour
 
     public void SetButtons(List<Button> newButtons){
         buttons = newButtons.Select(item => item.Clone()).ToList();
+    }
+
+    public void SetColourKeys(List<ColourKey> newColourKeys){
+        if(newColourKeys.Count != 0){
+            colourKeys = newColourKeys.Select(item => item.Clone()).ToList();
+        }
     }
 
     public bool IsEnemyAtPosition(Vector3Int position)
@@ -375,6 +413,7 @@ public class GridManager : MonoBehaviour
         DictToTilemap(3, state.layer3);
         DictToTilemap(4, state.layer4);
         SetButtons(state.buttons);
+        SetColourKeys(state.colourKeys);
 
         EnemyManager.Instance.OnTimeReversal(state.enemies);
 
@@ -388,6 +427,9 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
+
+        buttons = buttons.Concat(timeImmuneButtons).ToList();
+        colourKeys = colourKeys.Concat(timeImmuneColourKeys).ToList();
 
     }
 
