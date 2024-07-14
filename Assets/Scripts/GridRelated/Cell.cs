@@ -30,12 +30,6 @@ public class Cell : Tile
     public void PushBoxes(Vector3Int firstBoxPosition, Vector3Int unitDirection){
         var cell3 = GridManager.Instance.GetCell(3, firstBoxPosition + unitDirection);
 
-        if (GridManager.Instance.IsEnemyAtPosition(firstBoxPosition + unitDirection))
-        {
-        Debug.Log("Cannot push the box because there is an enemy in front.");
-        return;
-        }
-
         if (GridManager.Instance.CheckIfPushable(firstBoxPosition+unitDirection)){
             cell3.PushBoxes(firstBoxPosition + unitDirection, unitDirection);
             GridManager.Instance.MoveCell(3,firstBoxPosition,firstBoxPosition + unitDirection);

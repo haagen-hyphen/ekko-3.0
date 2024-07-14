@@ -101,48 +101,50 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     void MoveAndClearMoveBuffer(){
-        Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
-        Vector3Int aimedDestination = currentPositionInt + moveBuffer;
-        //can't walk don't walk
-        if(!gridManager.CheckIfWalkable(aimedDestination)){
-            if(gridManager.GetCell(1,aimedDestination).isSlimyWall && canPassSlimyWall){
+    Vector3Int currentPositionInt = new((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+    Vector3Int aimedDestination = currentPositionInt + moveBuffer;
+
+    // Can't walk, don't walk
+    if (!gridManager.CheckIfWalkable(aimedDestination)) {
+        if (gridManager.GetCell(1, aimedDestination).isSlimyWall && canPassSlimyWall) {
+            transform.position += moveBuffer;
+        } else if (gridManager.GetCell(1, aimedDestination).isWalkableByKeyPlayerHolding) {
+            transform.position += moveBuffer;
+        } else {
+            moveBuffer = Vector3Int.zero;
+        }
+    } else {
+        // Can walk, see if there's a box
+        var cell3 = GridManager.Instance.GetCell(3, aimedDestination);
+        // No box, then go
+        if (cell3 == null) {
+            transform.position += moveBuffer;
+        } else if (cell3.isPushable) {
+            // Check if an enemy is in front of the box
+            Vector3Int boxTargetPosition = aimedDestination + moveBuffer;
+            if (gridManager.IsEnemyAtPosition(boxTargetPosition)) {
+                Debug.Log("Cannot push the box because there is an enemy in front.");
+                moveBuffer = Vector3Int.zero;
+            } else if (cell3.CheckNotBlocked(boxTargetPosition, moveBuffer) && canPushThings) {
+                // Can push, so push
+                cell3.PushBoxes(aimedDestination, moveBuffer);
                 transform.position += moveBuffer;
-            }else if (gridManager.GetCell(1, aimedDestination).isWalkableByKeyPlayerHolding)
-            {
-                transform.position += moveBuffer;
-            }else{
+            } else {
+                // Can't push, don't walk
                 moveBuffer = Vector3Int.zero;
             }
         }
-        //can walk see if got box
-        else{
-            var cell3 = GridManager.Instance.GetCell(3, aimedDestination);
-            //no box then go
-            if(cell3 == null){
-                transform.position += moveBuffer;
-            }
-            //got box see if can push box(es)
-            else if(cell3.isPushable){
-                //can push so push
-                if(cell3.CheckNotBlocked(aimedDestination+moveBuffer,moveBuffer) && canPushThings){
-                    cell3.PushBoxes(aimedDestination,moveBuffer);
-                    transform.position += moveBuffer;
-                }
-                //can't push don't walk
-                else{
-                    moveBuffer = Vector3Int.zero;
-                }
-            }
-        }
-        moveBuffer = Vector3Int.zero;
-        gridManager.playerLastPosition = gridManager.playerPosition;
-        gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
+    }
+
+    moveBuffer = Vector3Int.zero;
+    gridManager.playerLastPosition = gridManager.playerPosition;
+    gridManager.playerPosition = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
     }
     #endregion
     #region shooting spear
     bool intendedToShoot = false;
     public void AimAndStoreShootBuffer(){
-        
+
         LineRenderer trajectory = GetComponentInChildren<LineRenderer>(true);
         if(Input.GetButton("Fire1") && canShoot){
             intendedToShoot = true;
@@ -234,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
             Boss.Instance.RevertTime();
         }
         catch{}
-        
+
     }
 
     public void SetAbilityToNone(){
