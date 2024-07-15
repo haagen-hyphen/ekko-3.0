@@ -73,6 +73,7 @@ public class TickManager : MonoBehaviour
         GameState currState = gridManager.GetGameState();
         currState.SetEnemies(enemyManager.enemies);
         currState.SetButtons(gridManager.buttons);
+        currState.SetColourKeys(gridManager.colourKeys);
         gameStates.Add(currState);
     }
     void CallEveryOtherAction(){

@@ -270,9 +270,7 @@ public class GridManager : MonoBehaviour
     }
 
     public void SetColourKeys(List<ColourKey> newColourKeys){
-        if(newColourKeys.Count != 0){
-            colourKeys = newColourKeys.Select(item => item.Clone()).ToList();
-        }
+        colourKeys = newColourKeys.Select(item => item.Clone()).ToList();
     }
 
     public bool IsEnemyAtPosition(Vector3Int position)
