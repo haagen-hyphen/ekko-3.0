@@ -273,9 +273,11 @@ public class EnemyManager : MonoBehaviour
 
     public List<(int r, int c)> AStarSearch2d((int r,int c) startingPosition, (int r,int c) endingPosition, int[,] originalGrid)
     {
+        if (startingPosition == endingPosition) return new List<(int r, int c)>();
         var rows = originalGrid.GetLength(0);
         var cols = originalGrid.GetLength(1);
         int[,] grid = new int[rows, cols];
+        (int score, (int r,int c) position) nearestPosition = (1000000, startingPosition);
 
         Array.Copy(originalGrid, grid, originalGrid.Length);
 
@@ -286,11 +288,15 @@ public class EnemyManager : MonoBehaviour
         while (node2Visit.Count > 0)
         {
             var node = node2Visit.OrderBy(node => node.heuristicScore).First();
+            if (node.heuristicScore < nearestPosition.score)
+            {
+                nearestPosition.score = node.heuristicScore;
+                nearestPosition.position = node.position;
+            }
 
             // if we reach the ending position return the path
             if (node.position.r == endingPosition.r && node.position.c == endingPosition.c)
             {
-
                 return node.path;
             }
 
@@ -348,7 +354,9 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
-        return new List<(int r, int c)>();
+        Debug.Log(nearestPosition.score);
+        Debug.Log(nearestPosition.position);
+        return AStarSearch2d( startingPosition,  nearestPosition.position,  originalGrid);
     }
     public bool CheckIfPathClear(Vector3Int unitDirection, int Range, int[,] localGrid){
         int length = localGrid.GetLength(0);

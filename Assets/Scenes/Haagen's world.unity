@@ -1596,8 +1596,8 @@ Tilemap:
   - first: {x: 6, y: -5, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1806,8 +1806,8 @@ Tilemap:
   - first: {x: 6, y: -4, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2026,8 +2026,8 @@ Tilemap:
   - first: {x: 7, y: -3, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2036,8 +2036,8 @@ Tilemap:
   - first: {x: 8, y: -3, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2046,8 +2046,8 @@ Tilemap:
   - first: {x: 9, y: -3, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2056,8 +2056,8 @@ Tilemap:
   - first: {x: 10, y: -3, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -3757,16 +3757,16 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: f8b547f44f4b2474db7405018b9fda0d, type: 2}
-  - m_RefCount: 185
+  - m_RefCount: 179
     m_Data: {fileID: 11400000, guid: fff685c565ef0d947b5a31fca6346780, type: 2}
-  - m_RefCount: 64
+  - m_RefCount: 70
     m_Data: {fileID: 11400000, guid: 6ea893258699ad340b67df1c51a397ee, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 3
     m_Data: {fileID: 21300000, guid: 437e8c2d336bd4b4ba5c504c558403ba, type: 3}
-  - m_RefCount: 185
+  - m_RefCount: 179
     m_Data: {fileID: 21300000, guid: dba772412722cd84eaaf3c07cfc21a96, type: 3}
-  - m_RefCount: 64
+  - m_RefCount: 70
     m_Data: {fileID: 21300000, guid: f4827a2ad0575024ea7d2a9d3fb3be54, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 252
@@ -4313,13 +4313,17 @@ MonoBehaviour:
   layer3: {fileID: 1432631032}
   layer4: {fileID: 2033233913}
   playerPosition: {x: 0, y: 0, z: 0}
+  playerLastPosition: {x: 0, y: 0, z: 0}
   buttons:
   - position: {x: -2, y: -1, z: 0}
     doors:
     - {x: 7, y: -1, z: 0}
     triggeredLastTick: 0
-  traps:
-  - position: {x: -5, y: -3, z: 0}
+    timeImmune: 0
+  timeImmuneButtons: []
+  colourKeys: []
+  timeImmuneColourKeys: []
+  trapPositions: []
 --- !u!4 &1674546338
 Transform:
   m_ObjectHideFlags: 0
@@ -4350,21 +4354,24 @@ MonoBehaviour:
   gridManager: {fileID: 1674546337}
   slimes:
   - position: {x: 10, y: -5, z: 0}
+    cell: {fileID: 0}
     tickSinceLastMove: 0
     tickPerMove: 0
     searchRadius: 0
     movable: 0
     ranged: 0
     shootingRange: 0
+    timeImmune: 0
   spearGoblins:
   - position: {x: -5, y: 3, z: 0}
+    cell: {fileID: 0}
     tickSinceLastMove: 0
     tickPerMove: 0
     searchRadius: 0
     movable: 0
     ranged: 0
     shootingRange: 0
-    isTimeImmune: 0
+    timeImmune: 0
   enemies: []
   timeImmuneEnemies: []
 --- !u!1 &1707019055
