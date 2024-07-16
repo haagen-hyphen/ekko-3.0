@@ -283,12 +283,14 @@ public class EnemyManager : MonoBehaviour
 
         List<((int r ,int c) position, int heuristicScore, List<(int, int)> path)> node2Visit = new List<((int r, int c), int, List<(int r, int c)>)>();
         node2Visit.Add((startingPosition, HeuristicByAbsDistance(startingPosition, endingPosition), new List<(int r, int c)>()));
-
+        
         grid[startingPosition.r,startingPosition.c] = -1;
         while (node2Visit.Count > 0)
         {
+            
             var node = node2Visit.OrderBy(node => node.heuristicScore).First();
-            if (node.heuristicScore < nearestPosition.score)
+
+            if (node.heuristicScore <= nearestPosition.score)
             {
                 nearestPosition.score = node.heuristicScore;
                 nearestPosition.position = node.position;
@@ -354,8 +356,7 @@ public class EnemyManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log(nearestPosition.score);
-        Debug.Log(nearestPosition.position);
+
         return AStarSearch2d( startingPosition,  nearestPosition.position,  originalGrid);
     }
     public bool CheckIfPathClear(Vector3Int unitDirection, int Range, int[,] localGrid){
