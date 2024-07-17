@@ -901,19 +901,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 872505809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 348d17b825703bf4686d633541895d8a, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b936c5df34d5564fa605950cdf9ed3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stateName: 0
   nextState: {fileID: 0}
   myEvent: 0
-  self: {fileID: 0}
-  shadow: {fileID: 0}
-  jumping: 0
-  slimeDeadly: {fileID: 0}
-  floor: {fileID: 0}
-  slimyWall: {fileID: 0}
-  layer1: {fileID: 0}
 --- !u!1 &994934799
 GameObject:
   m_ObjectHideFlags: 0
@@ -4384,7 +4377,10 @@ MonoBehaviour:
     doors:
     - {x: 8, y: 4, z: 0}
     triggeredLastTick: 0
+    timeImmune: 0
+  timeImmuneButtons: []
   colourKeys: []
+  timeImmuneColourKeys: []
   trapPositions:
   - {x: -8, y: -5, z: 0}
 --- !u!114 &1383085563
@@ -4429,7 +4425,7 @@ MonoBehaviour:
     movable: 0
     ranged: 0
     shootingRange: 0
-    isTimeImmune: 0
+    timeImmune: 0
   enemies: []
   timeImmuneEnemies: []
 --- !u!4 &1383085565

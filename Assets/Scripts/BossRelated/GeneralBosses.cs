@@ -6,21 +6,17 @@ using UnityEngine.Tilemaps;
 
 public class GeneralBosses : MonoBehaviour
 {
-    public float tickMyself;
+    private float tickMyself;
     public static GeneralBosses Instance { get; private set; }
-    public SlimeBossState currentState;
-    public List<SlimeBossState> bossStates = new();
-    
-    void Awake(){
-        if (Instance != null && Instance != this) 
-        { 
-            Destroy(this); 
-        } 
-        else 
-        { 
-            Instance = this; 
-        }
-        currentState = new SpawnSlimesAndWait();
+    public SlimeBossState2 currentState;
+    public List<SlimeBossState2> bossStates = new();
+
+    [Header("Something every bosses need")]
+    public Tilemap layer1;
+    //animator, playerTransform, etc.
+
+    void Start(){
+        currentState = new SpawnSlimes(layer1);
     }
 
     // Update is called once per frame
