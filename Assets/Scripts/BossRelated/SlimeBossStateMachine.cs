@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.Timeline;
 
-public class SlimeBossState : MonoBehaviour
+public class SlimeBossState
 {
     public enum StateName{SpawnSlimesAndWait, Attack};
     public enum Event{Enter, Ontick, Exit};
@@ -44,8 +44,8 @@ public class SlimeBossState : MonoBehaviour
         Vector3Int aimLandAt = DecideWhereToLand();
         //jump
         jumping=true;
-        SetCells(4, Vector3ToVector3Int(transform.position),null);
-        transform.position = aimLandAt;
+        // SetCells(4, Vector3ToVector3Int(transform.position),null);
+        // transform.position = aimLandAt;
         shadow.enabled = true;
         self.enabled = false;
         
@@ -124,7 +124,7 @@ public class SpawnSlimesAndWait : SlimeBossState
 
 
     #region f() for SSAW
-    void SpawnSlimesRandomly(int ratio){
+    public void SpawnSlimesRandomly(int ratio){
         for (int i = layer1.cellBounds.min.x+1; i < layer1.cellBounds.max.x-3; i++)
             {
                 for (int j = layer1.cellBounds.min.y+1; j < layer1.cellBounds.max.y-1; j++)
