@@ -13069,7 +13069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tickPassed: 0
-  secondPerTick: 0.3
+  secondPerTick: 0.5
   gameStates: []
   playerMovement: {fileID: 1513884759}
   gridManager: {fileID: 1792532280}
