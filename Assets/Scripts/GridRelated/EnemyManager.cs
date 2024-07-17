@@ -84,6 +84,15 @@ public class Slime : Enemy
         GridManager.Instance.SetCell(3,position,GridManager.Instance.slime);
         GridManager.Instance.SetCell(4,position,GridManager.Instance.slimeDeadly);
     }
+    public Slime(Vector3Int position, int tickPerMove, int searchRadius){
+        this.searchRadius = searchRadius;
+        this.tickPerMove = tickPerMove;
+        this.position = position;
+        movable = true;
+        ranged = false;
+        GridManager.Instance.SetCell(3,position,GridManager.Instance.slime);
+        GridManager.Instance.SetCell(4,position,GridManager.Instance.slimeDeadly);
+    }
     public override void Init(){
         movable = true;
         ranged = false;

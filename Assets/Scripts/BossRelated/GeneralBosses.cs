@@ -8,15 +8,17 @@ public class GeneralBosses : MonoBehaviour
 {
     private float tickMyself;
     public static GeneralBosses Instance { get; private set; }
-    public SlimeBossState2 currentState;
-    public List<SlimeBossState2> bossStates = new();
+    public SlimeBossState currentState;
+    public List<SlimeBossState> bossStates = new();
 
     [Header("Something every bosses need")]
     public Tilemap layer1;
+    public Transform player;
+    public GameObject boss;
     //animator, playerTransform, etc.
 
     void Start(){
-        currentState = new SpawnSlimes(layer1);
+        currentState = new SpawnSlimes(layer1, player, boss);
     }
 
     // Update is called once per frame

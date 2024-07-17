@@ -801,7 +801,6 @@ GameObject:
   - component: {fileID: 872505811}
   - component: {fileID: 872505810}
   - component: {fileID: 872505812}
-  - component: {fileID: 872505813}
   m_Layer: 0
   m_Name: SlimeKing
   m_TagString: Untagged
@@ -889,24 +888,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fd19eb35d049844ca332808974a9010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickMyself: 0
-  currentState: {fileID: 0}
-  bossStates: []
---- !u!114 &872505813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 872505809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b936c5df34d5564fa605950cdf9ed3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateName: 0
-  nextState: {fileID: 0}
-  myEvent: 0
+  layer1: {fileID: 1262174960}
+  player: {fileID: 1534553476}
+  boss: {fileID: 872505809}
 --- !u!1 &994934799
 GameObject:
   m_ObjectHideFlags: 0
@@ -4031,8 +4015,8 @@ Tilemap:
   - first: {x: 8, y: 4, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileIndex: 0
+      m_TileSpriteIndex: 0
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4260,9 +4244,9 @@ Tilemap:
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 136
+  - m_RefCount: 137
     m_Data: {fileID: 11400000, guid: fff685c565ef0d947b5a31fca6346780, type: 2}
-  - m_RefCount: 77
+  - m_RefCount: 76
     m_Data: {fileID: 11400000, guid: 6ea893258699ad340b67df1c51a397ee, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -4271,9 +4255,9 @@ Tilemap:
   - m_RefCount: 16
     m_Data: {fileID: 11400000, guid: dea918ce0823ec24b905078b21b2f647, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 136
+  - m_RefCount: 137
     m_Data: {fileID: 21300000, guid: dba772412722cd84eaaf3c07cfc21a96, type: 3}
-  - m_RefCount: 77
+  - m_RefCount: 76
     m_Data: {fileID: 21300000, guid: f4827a2ad0575024ea7d2a9d3fb3be54, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
