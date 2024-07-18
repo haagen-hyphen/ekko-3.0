@@ -50,6 +50,7 @@ public class TickManager : MonoBehaviour
     public GridManager gridManager;
     public EnemyManager enemyManager;
     public UIManager uIManager;
+    public GeneralBosses generalBosses;
 
     // Start is called before the first frame update
     void Start()
@@ -78,6 +79,10 @@ public class TickManager : MonoBehaviour
     }
     void CallEveryOtherAction(){
         playerMovement.AnythingToBeDoneWheneverTicks(tickPassed);
+        try{
+            generalBosses.AnythingToBeDoneWheneverTicks(tickPassed);
+        }
+        catch{}
         enemyManager.AnythingToBeDoneWheneverTicks(tickPassed);
         gridManager.AnythingToBeDoneWheneverTicks(tickPassed);
     }

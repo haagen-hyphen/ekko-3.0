@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,22 +16,13 @@ public class GeneralBosses : MonoBehaviour
     public Tilemap layer1;
     public Transform player;
     public GameObject boss;
-    //animator, playerTransform, etc.
 
     void Start(){
         currentState = new SpawnSlimes(layer1, player, boss);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(Time.time - tickMyself > 0.5f){
-            OnTick();
-        }
-        
-    }
 
-    public void OnTick(){
+    public void AnythingToBeDoneWheneverTicks(int tickPassed){
         tickMyself += 0.5f;
         currentState = currentState.Process();
         bossStates.Add(currentState);

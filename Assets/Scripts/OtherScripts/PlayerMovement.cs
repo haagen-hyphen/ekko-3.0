@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private float secondPerTick;
     public GridManager gridManager;
     public UIManager uIManager;
+    public GeneralBosses generalBosses;
     public bool isDead = false;
     public string currentAbility = "Hand";
     public GameObject trajectory;
@@ -235,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
         EnemyManager.Instance.StopAllCoroutines(); //fix the bug where the spear keeps moving after player death
         tickManager.HandleDeath();
         try{
-            GeneralBosses.Instance.RevertTime();
+            generalBosses.RevertTime();
         }
         catch{}
 
