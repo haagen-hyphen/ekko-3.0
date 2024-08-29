@@ -1511,8 +1511,8 @@ Tilemap:
   - first: {x: 4, y: -2, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileIndex: 2
+      m_TileSpriteIndex: 2
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -3060,20 +3060,20 @@ Tilemap:
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: f7e2fdee7c84bcc43b6f3e9bf84a9446, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 134
     m_Data: {fileID: 11400000, guid: fff685c565ef0d947b5a31fca6346780, type: 2}
-  - m_RefCount: 115
+  - m_RefCount: 116
     m_Data: {fileID: 11400000, guid: 6ea893258699ad340b67df1c51a397ee, type: 2}
   - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: f8b547f44f4b2474db7405018b9fda0d, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: 8e92c0e1ddbfc3f429f000232ad2b929, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 134
     m_Data: {fileID: 21300000, guid: dba772412722cd84eaaf3c07cfc21a96, type: 3}
-  - m_RefCount: 115
+  - m_RefCount: 116
     m_Data: {fileID: 21300000, guid: f4827a2ad0575024ea7d2a9d3fb3be54, type: 3}
   - m_RefCount: 2
     m_Data: {fileID: 21300000, guid: 437e8c2d336bd4b4ba5c504c558403ba, type: 3}
@@ -4152,6 +4152,7 @@ MonoBehaviour:
   tickManager: {fileID: 1792532281}
   gridManager: {fileID: 1792532280}
   uIManager: {fileID: 319474792}
+  generalBosses: {fileID: 0}
   isDead: 0
   currentAbility: hand
   trajectory: {fileID: 0}
@@ -4580,9 +4581,17 @@ MonoBehaviour:
   layer4: {fileID: 1049265786}
   playerPosition: {x: 0, y: 0, z: 0}
   playerLastPosition: {x: 0, y: 0, z: 0}
-  buttons: []
+  buttons:
+  - position: {x: -1, y: 0, z: 0}
+    doors:
+    - {x: 6, y: -2, z: 0}
+    triggeredLastTick: 0
+    timeImmune: 0
+  timeImmuneButtons: []
   colourKeys: []
-  trapPositions: []
+  timeImmuneColourKeys: []
+  trapPositions:
+  - {x: 0, y: -4, z: 0}
 --- !u!114 &1792532281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4602,6 +4611,7 @@ MonoBehaviour:
   gridManager: {fileID: 1792532280}
   enemyManager: {fileID: 1792532282}
   uIManager: {fileID: 319474792}
+  generalBosses: {fileID: 0}
 --- !u!114 &1792532282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4615,7 +4625,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1792532280}
-  slimes: []
+  slimes:
+  - position: {x: -1, y: -1, z: 0}
+    cell: {fileID: 0}
+    tickSinceLastMove: 0
+    tickPerMove: 2
+    searchRadius: 3
+    movable: 0
+    ranged: 0
+    shootingRange: 0
+    timeImmune: 0
   spearGoblins: []
   enemies: []
   timeImmuneEnemies: []
