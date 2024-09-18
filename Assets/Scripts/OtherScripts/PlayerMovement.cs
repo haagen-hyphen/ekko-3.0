@@ -13,7 +13,7 @@ using UnityEngine.UIElements;
 public class PlayerMovement : MonoBehaviour
 {
     public TickManager tickManager;
-    private Vector3Int moveBuffer;
+    public Vector3Int moveBuffer;
     private float secondPerTick;
     public GridManager gridManager;
     public UIManager uIManager;
