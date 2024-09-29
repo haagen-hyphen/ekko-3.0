@@ -9,13 +9,13 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: 563ae36374eae2a428667bbf4b959be3
   - enabled: 1
-    path: Assets/Scenes/Levels/DoubleBox.unity
+    path: Assets/Scenes/Levels/_DoubleBox.unity
     guid: e81a035d054388f43bc4dae7ac9361a0
   - enabled: 1
-    path: Assets/Scenes/Levels/BoxMaze.unity
+    path: Assets/Scenes/Levels/_BoxMaze.unity
     guid: 90fc225f89b1c6644853474962ceb9c3
   - enabled: 1
-    path: Assets/Scenes/Levels/IntroSlime.unity
+    path: Assets/Scenes/Levels/_IntroSlime.unity
     guid: 7f9a07d7c78169244a8a0529acea0634
   - enabled: 1
     path: Assets/Scenes/Levels/IntroSLimyWall.unity
@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/SlimeOnButtonTrappy.unity
     guid: 00649bfad08c7774fa4bbcd85b8a9ae7
   - enabled: 1
-    path: Assets/Scenes/Levels/bigMaze.unity
+    path: Assets/Scenes/Levels/_bigMaze.unity
     guid: 6a37f0da1e6c72a4e90d6573bd370d58
   - enabled: 1
     path: Assets/Scenes/Levels/SlimeOnButtonTricky.unity

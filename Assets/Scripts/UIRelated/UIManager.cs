@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour
 {
     public TickManager tickManager;
     // public RectTransform axisTransform;
-    float t = 0f;
     public RectTransform abilitySlot;
     public Sprite hand;
     public Camera mainCamera;
@@ -52,12 +51,12 @@ public class UIManager : MonoBehaviour
     }
 
     public void MainMenu(){
-        SceneManager.LoadScene(0);
+        LevelManager.Instance.LoadLevel(0);
     }
 
     public void Restart(){
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
+        LevelManager.Instance.LoadLevel(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void SetAbilityImage(Cell killedBy){

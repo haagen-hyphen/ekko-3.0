@@ -51,6 +51,7 @@ public class TickManager : MonoBehaviour
     public EnemyManager enemyManager;
     public UIManager uIManager;
     public GeneralBosses generalBosses;
+    private float game_time = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -61,8 +62,9 @@ public class TickManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        game_time += Time.deltaTime;
         if(!uIManager.isGamePaused){
-            if(Time.time/secondPerTick > tickPassed){
+            if(game_time/secondPerTick > tickPassed){
                 tickPassed += 1;
                 StoreGameState();
                 CallEveryOtherAction();

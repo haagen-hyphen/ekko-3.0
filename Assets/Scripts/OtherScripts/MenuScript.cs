@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 public class MenuScript : MonoBehaviour
 {
     public void LoadLevel(int level){
-        SceneManager.LoadScene(level);
         Time.timeScale = 1f;
+        LevelManager.Instance.LoadLevel(level);
     }
 
     public void QuitGame(){
