@@ -51,6 +51,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void MainMenu(){
+        Time.timeScale = 1f;
         LevelManager.Instance.LoadLevel(0);
     }
 
