@@ -12,11 +12,14 @@ using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public TickManager tickManager;
+    public GameObject movePoint;
+    public float moveSpeed;
+    public Animator anim;
+    private TickManager tickManager;
     public Vector3Int moveBuffer;
     private float secondPerTick;
-    public GridManager gridManager;
-    public UIManager uIManager;
+    private GridManager gridManager;
+    private UIManager uIManager;
     public GeneralBosses generalBosses;
     public bool isDead = false;
     public string currentAbility = "Hand";
@@ -36,12 +39,16 @@ public class PlayerMovement : MonoBehaviour
         {
             Instance = this;
         }
-        gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
 
     void Start()
     {
+        tickManager = TickManager.Instance;
+        gridManager = GridManager.Instance;
+        uIManager = UIManager.Instance;
         secondPerTick = tickManager.secondPerTick;
+        movePoint.transform.parent = null;
+        gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
     }
 
     // Update is called once per frame
@@ -51,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
             StoreMoveBuffer(false);
             AimAndStoreShootBuffer();
             CancelAimIfNeeded();
+            PlayerMove();
         }
     }
 
@@ -111,9 +119,9 @@ public class PlayerMovement : MonoBehaviour
         // Can't walk, don't walk
         if (!gridManager.CheckIfWalkable(aimedDestination)) {
             if (gridManager.GetCell(1, aimedDestination).isSlimyWall && canPassSlimyWall) {
-                transform.position += moveBuffer;
+                movePoint.transform.position += moveBuffer;
             } else if (gridManager.GetCell(1, aimedDestination).isWalkableByKeyPlayerHolding) {
-                transform.position += moveBuffer;
+                movePoint.transform.position += moveBuffer;
             } else {
                 moveBuffer = Vector3Int.zero;
             }
@@ -122,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
             var cell3 = GridManager.Instance.GetCell(3, aimedDestination);
             // No box, then go
             if (cell3 == null) {
-                transform.position += moveBuffer;
+                movePoint.transform.position += moveBuffer;
             } else if (cell3.isPushable) {
                 // Check if an enemy is in front of the box
                 Vector3Int boxTargetPosition = aimedDestination + moveBuffer;
@@ -131,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
                 } else if (cell3.CheckNotBlocked(boxTargetPosition, moveBuffer) && canPushThings) {
                     // Can push, so push
                     cell3.PushBoxes(aimedDestination, moveBuffer);
-                    transform.position += moveBuffer;
+                    movePoint.transform.position += moveBuffer;
                 } else {
                     // Can't push, don't walk
                     moveBuffer = Vector3Int.zero;
@@ -141,9 +149,22 @@ public class PlayerMovement : MonoBehaviour
 
         moveBuffer = Vector3Int.zero;
         gridManager.playerLastPosition = gridManager.playerPosition;
-        gridManager.playerPosition = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
+        gridManager.playerPosition = new Vector3Int((int)movePoint.transform.position.x, (int)movePoint.transform.position.y, (int)movePoint.transform.position.z);
     }
+
+    public void PlayerMove(){
+        transform.position = Vector3.MoveTowards(transform.position, movePoint.transform.position, moveSpeed * Time.deltaTime);
+        if (Vector3.Distance(transform.position, movePoint.transform.position) <= 0.3f){
+            anim.SetBool("isMove", false);
+        }
+        else{
+            anim.SetBool("isMove", true);
+        }
+    }
+
     #endregion
+    
+    
     #region shooting spear
     bool intendedToShoot = false;
     public void AimAndStoreShootBuffer(){
