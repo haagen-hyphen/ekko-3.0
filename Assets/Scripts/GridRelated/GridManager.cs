@@ -62,7 +62,7 @@ public class GridManager : MonoBehaviour
     #region Variables
     public static GridManager Instance { get; private set; }
     public Cell wall, floor, spear, trapDeadly, slimeDeadly, slimyWall, slime;
-    public PlayerMovement playerMovement;
+    private PlayerMovement playerMovement;
     [SerializeField]private Tilemap layer1;
     [SerializeField]private Tilemap layer2;
     [SerializeField]private Tilemap layer3;
@@ -177,6 +177,10 @@ public class GridManager : MonoBehaviour
                 timeImmuneColourKeys.Add(colourKey.Clone());
             }
         }
+    }
+    
+    void Start(){
+        playerMovement = PlayerMovement.Instance;
     }
 
     public void AnythingToBeDoneWheneverTicks(int tickPassed){
@@ -406,6 +410,7 @@ public class GridManager : MonoBehaviour
         layer4.ClearAllTiles();
         playerPosition = state.playerPosition;
         playerMovement.transform.position = state.playerPosition;
+        playerMovement.movePoint.transform.position = state.playerPosition;
         DictToTilemap(1, state.layer1);
         DictToTilemap(2, state.layer2);
         DictToTilemap(3, state.layer3);

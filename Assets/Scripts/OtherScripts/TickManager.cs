@@ -41,22 +41,33 @@ public class GameState
 
 public class TickManager : MonoBehaviour
 {
+    public static TickManager Instance {get; private set;}
     [HideInInspector]public int tickPassed = 0;
     public float secondPerTick;
 
     public List<GameState> gameStates = new();
 
-    public PlayerMovement playerMovement;
+    private PlayerMovement playerMovement;
     public GridManager gridManager;
     public EnemyManager enemyManager;
     public UIManager uIManager;
     public GeneralBosses generalBosses;
     private float game_time = 0f;
 
+    void Awake(){
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+    }
     // Start is called before the first frame update
     void Start()
     {
-
+        playerMovement = PlayerMovement.Instance;
     }
 
     // Update is called once per frame

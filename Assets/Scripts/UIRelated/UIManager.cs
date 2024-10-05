@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;
     public TickManager tickManager;
     // public RectTransform axisTransform;
     public RectTransform abilitySlot;
@@ -18,6 +19,17 @@ public class UIManager : MonoBehaviour
     public Camera mainCamera;
     public bool isGamePaused; //to be put at every script's update
     // public AudioSource audioSource; 
+
+    void Awake(){
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+    }
 
     void Start()
     {
