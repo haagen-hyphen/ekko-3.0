@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     public int shootingRange;
     public Vector3Int shootBuffer;
     Vector3[] startAndEndPoints = new Vector3[2];
+    private SpriteRenderer sr;
     public static PlayerMovement Instance;
 
     // Start is called before the first frame update
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
         tickManager = TickManager.Instance;
         gridManager = GridManager.Instance;
         uIManager = UIManager.Instance;
+        sr = GetComponentInChildren<SpriteRenderer>();
         secondPerTick = tickManager.secondPerTick;
         movePoint.transform.parent = null;
         gridManager.playerPosition = new Vector3Int((int)transform.position.x,(int)transform.position.y,(int)transform.position.z);
@@ -159,6 +161,16 @@ public class PlayerMovement : MonoBehaviour
         }
         else{
             anim.SetBool("isMove", true);
+        }
+        
+        float dir = transform.position.x - movePoint.transform.position.x; 
+        if (dir > 0)
+        {
+            sr.flipX = true;
+        }
+        else if (dir < 0)
+        {
+            sr.flipX = false;
         }
     }
 
